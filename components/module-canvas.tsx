@@ -147,7 +147,7 @@ export function ModuleCanvas({
           return (
             <line
               className={dimmed ? "stroke-border/70" : "stroke-amber-400"}
-              key={`${edge.from}-${edge.to}`}
+              key={`${edge.from}\0${edge.to}\0${edge.fromFile}\0${edge.toFile}`}
               opacity={dimmed ? 0.65 : 1}
               strokeWidth={dimmed ? 1.5 : 2.5}
               x1={from.x}
