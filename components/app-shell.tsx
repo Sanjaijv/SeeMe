@@ -3,41 +3,68 @@ import Link from "next/link";
 
 import { OrganizationControls } from "@/components/organization-controls";
 import { ThemeControl } from "@/components/theme-control";
+import analysis from "@/data/analysis.json";
+import type { ParsedFile } from "@/lib/parser/types";
+
+const categoryColors: Record<ParsedFile["moduleKind"], string> = {
+  source: "bg-accent",
+  declaration: "bg-emerald-500",
+  config: "bg-amber-500",
+};
 
 export function AppShell({
   children,
-  organizationId,
 }: {
   children: ReactNode;
-  organizationId: string | null;
 }) {
+  const files = analysis.files as ParsedFile[];
+  const categories = (["source", "declaration", "config"] as const).map(
+    (kind) => ({
+      kind,
+      count: files.filter((file) => file.moduleKind === kind).length,
+    }),
+  );
+
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <aside className="hidden w-56 shrink-0 border-r border-border bg-panel p-4 md:flex md:flex-col">
-        <div className="mb-8">
-          <p className="font-mono text-sm font-semibold tracking-tight">
+    <div className="min-h-screen min-w-[68rem] bg-background text-foreground">
+      <header className="flex min-h-14 items-center justify-between gap-4 border-b border-border bg-panel px-4 md:px-6">
+        <div className="flex items-center gap-4">
+          <Link className="font-mono text-sm font-semibold tracking-tight" href="/">
             seeme
-          </p>
-          <p className="mt-1 text-xs text-muted">Dependency maps for teams</p>
-        </div>
-        <nav aria-label="Primary navigation" className="space-y-1 text-sm">
-          <Link
-            className="block rounded bg-panel-strong px-3 py-2 font-medium"
-            href="/"
-          >
-            Workspace
           </Link>
-        </nav>
-        <p className="mt-auto font-mono text-[11px] text-muted">
-          {organizationId ?? "No organization selected"}
-        </p>
-      </aside>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex min-h-14 items-center justify-between gap-4 border-b border-border bg-panel px-4 md:px-6">
+          <span className="text-border">/</span>
           <OrganizationControls />
-          <ThemeControl />
-        </header>
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        </div>
+        <ThemeControl />
+      </header>
+      <div className="grid min-h-[calc(100vh-3.5rem)] grid-cols-[13rem_minmax(0,1fr)_18rem]">
+        <aside className="border-r border-border bg-panel p-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+              Files
+            </h2>
+            <span className="font-mono text-[11px] text-muted">
+              {files.length}
+            </span>
+          </div>
+          <div className="mt-4 space-y-1">
+            {categories.map((category) => (
+              <div
+                className="flex items-center justify-between px-2 py-1.5 font-mono text-[11px] text-muted"
+                key={category.kind}
+              >
+                <span className="flex items-center gap-2">
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${categoryColors[category.kind]}`}
+                  />
+                  {category.kind}
+                </span>
+                <span>{category.count}</span>
+              </div>
+            ))}
+          </div>
+        </aside>
+        {children}
       </div>
     </div>
   );

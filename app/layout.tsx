@@ -27,12 +27,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "try { var theme = localStorage.getItem('seeme-theme'); if (theme === 'light' || theme === 'dark' || theme === 'system') document.documentElement.dataset.theme = theme; } catch (_) {}",
-          }}
-        />
         <ClerkProvider>
           {children}
         </ClerkProvider>

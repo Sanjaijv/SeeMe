@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": ".parser-build",
+    "rootDir": ".",
+    "declaration": true
+  },
+  "include": ["lib/parser/**/*.ts", "scripts/**/*.ts"]
+}

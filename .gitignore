@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+/.parser-build/
 /out/
 
 # production

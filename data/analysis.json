@@ -1,0 +1,987 @@
+{
+  "version": 1,
+  "root": "/data/seeme",
+  "files": [
+    {
+      "path": "app/(workspace)/layout.tsx",
+      "folder": "app/(workspace)",
+      "extension": ".tsx",
+      "lines": 26,
+      "hash": "e31ee515ad42517c2052d81b735d78a9f81e87f3357fba4118ffe96f2b5562fe",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "app/(workspace)/page.tsx",
+      "folder": "app/(workspace)",
+      "extension": ".tsx",
+      "lines": 14,
+      "hash": "fda140b74ed323c753ae90cee5cfd5293c43cb2e7a777f63fa517f030c8df3c1",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "app/layout.tsx",
+      "folder": "app",
+      "extension": ".tsx",
+      "lines": 36,
+      "hash": "4a20a40ac1f35eb82a441fd0d9802d7dca358ba06298d551e94fab59eff0c7e4",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "app/sign-in/[[...sign-in]]/page.tsx",
+      "folder": "app/sign-in/[[...sign-in]]",
+      "extension": ".tsx",
+      "lines": 13,
+      "hash": "6e426f90ecc0144cefc2e855d8a63b598c642ede96d8fe239ea6f63bdde9d51b",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "app/sign-up/[[...sign-up]]/page.tsx",
+      "folder": "app/sign-up/[[...sign-up]]",
+      "extension": ".tsx",
+      "lines": 13,
+      "hash": "6f0b5a321338c02fea7f2da63fc66df61f478d09e81d6ba59950d889d4eff4cc",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "components/app-shell.tsx",
+      "folder": "components",
+      "extension": ".tsx",
+      "lines": 88,
+      "hash": "091e39139dded45a5b9a25209c2d2c4e38418360593ef2db3d0c7a4910b54686",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "components/module-canvas.tsx",
+      "folder": "components",
+      "extension": ".tsx",
+      "lines": 168,
+      "hash": "d64a0456d2be93bad73612d7424f15805a63d8cb0ddc7c88ab9950dbedfdefcc",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "components/organization-controls.tsx",
+      "folder": "components",
+      "extension": ".tsx",
+      "lines": 29,
+      "hash": "5ac848da9d9b5a830bd9064644b590e6ca7fbf5f72bb55df0dffeadc972629ea",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "components/theme-control.tsx",
+      "folder": "components",
+      "extension": ".tsx",
+      "lines": 75,
+      "hash": "b7232ba2383b7e787b88e658ea0264d32186bdc5d845f4d2e332e142bd509671",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "eslint.config.mjs",
+      "folder": ".",
+      "extension": ".mjs",
+      "lines": 20,
+      "hash": "f9353353406ad995671057b72ab430c0e57f0842af9774976d7d1ce8f16dfd6f",
+      "moduleKind": "config",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "lib/env.ts",
+      "folder": "lib",
+      "extension": ".ts",
+      "lines": 17,
+      "hash": "ad625cf7bb72b2df5852a59a974137398a21d223ea8a4dc9fb4c150149c5d83f",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "lib/parser/adapter.ts",
+      "folder": "lib/parser",
+      "extension": ".ts",
+      "lines": 9,
+      "hash": "19a1bc8da3f68f43a28bd8e3723c5129c526247b191adefab30c0c6b8c87f248",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 1,
+      "fanOut": 1
+    },
+    {
+      "path": "lib/parser/folding.ts",
+      "folder": "lib/parser",
+      "extension": ".ts",
+      "lines": 124,
+      "hash": "1fc8447c57c445d7f55bb86dfce201e72f19ffc4332cdca70aecfb1efb2df285",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 1
+    },
+    {
+      "path": "lib/parser/graph.ts",
+      "folder": "lib/parser",
+      "extension": ".ts",
+      "lines": 17,
+      "hash": "21c079b2d696cc916f4512e26e5b7e22ba164ce2c2f7c494a4a53ed572608786",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 1,
+      "fanOut": 1
+    },
+    {
+      "path": "lib/parser/parse.ts",
+      "folder": "lib/parser",
+      "extension": ".ts",
+      "lines": 258,
+      "hash": "ff9f07abd44f8ff4e2502d5a028209fa474d12f0890cf8c9b1b75551b5526f16",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 1,
+      "fanOut": 3
+    },
+    {
+      "path": "lib/parser/types.ts",
+      "folder": "lib/parser",
+      "extension": ".ts",
+      "lines": 63,
+      "hash": "5b9f7975e444e83793d5a16223f42bf928ee3a52128da113ebaead7a28b42c4a",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 5,
+      "fanOut": 0
+    },
+    {
+      "path": "lib/supabase/server.ts",
+      "folder": "lib/supabase",
+      "extension": ".ts",
+      "lines": 14,
+      "hash": "af8366347ab32084f87aaf1d893fe4f419e5ccb2424d68e06c69852b213d0537",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "next-env.d.ts",
+      "folder": ".",
+      "extension": ".ts",
+      "lines": 8,
+      "hash": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b",
+      "moduleKind": "declaration",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "next.config.ts",
+      "folder": ".",
+      "extension": ".ts",
+      "lines": 18,
+      "hash": "17145a9822ec351b92b8a5f8d3a709a531c8690ed92d397a4405ae084ea9acc7",
+      "moduleKind": "config",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "proxy.ts",
+      "folder": ".",
+      "extension": ".ts",
+      "lines": 23,
+      "hash": "4a1d5279955e33087c2986fcdc73c633d0e4550e51c891335ad660180d86aa5f",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 0
+    },
+    {
+      "path": "scripts/parse-repository.ts",
+      "folder": "scripts",
+      "extension": ".ts",
+      "lines": 46,
+      "hash": "d04f0f6e50139c04a1f713ccd2f12f732f971e0df245d79d39e7432d07d192f5",
+      "moduleKind": "source",
+      "adapterRole": null,
+      "fanIn": 0,
+      "fanOut": 2
+    }
+  ],
+  "edges": [
+    {
+      "from": "lib/parser/adapter.ts",
+      "to": "lib/parser/types.ts",
+      "kind": "import",
+      "specifier": "./types"
+    },
+    {
+      "from": "lib/parser/folding.ts",
+      "to": "lib/parser/types.ts",
+      "kind": "import",
+      "specifier": "./types"
+    },
+    {
+      "from": "lib/parser/graph.ts",
+      "to": "lib/parser/types.ts",
+      "kind": "import",
+      "specifier": "./types"
+    },
+    {
+      "from": "lib/parser/parse.ts",
+      "to": "lib/parser/adapter.ts",
+      "kind": "import",
+      "specifier": "./adapter"
+    },
+    {
+      "from": "lib/parser/parse.ts",
+      "to": "lib/parser/graph.ts",
+      "kind": "import",
+      "specifier": "./graph"
+    },
+    {
+      "from": "lib/parser/parse.ts",
+      "to": "lib/parser/types.ts",
+      "kind": "import",
+      "specifier": "./types"
+    },
+    {
+      "from": "scripts/parse-repository.ts",
+      "to": "lib/parser/parse.ts",
+      "kind": "import",
+      "specifier": "../lib/parser/parse"
+    },
+    {
+      "from": "scripts/parse-repository.ts",
+      "to": "lib/parser/types.ts",
+      "kind": "import",
+      "specifier": "../lib/parser/types"
+    }
+  ],
+  "skipped": [],
+  "coverage": {
+    "totalImports": 50,
+    "counts": {
+      "resolved": 8,
+      "external": 20,
+      "excluded": 21,
+      "unresolved": 1
+    },
+    "imports": [
+      {
+        "importer": "app/(workspace)/layout.tsx",
+        "specifier": "@clerk/nextjs/server",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@clerk+nextjs@7.9.20_next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3_515d0f30d5259d13481943cb3935c338/node_modules/@clerk/nextjs/dist/types/server/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "app/(workspace)/layout.tsx",
+        "specifier": "react",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@types+react@19.3.0/node_modules/@types/react/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "app/(workspace)/layout.tsx",
+        "specifier": "@/components/app-shell",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "app/(workspace)/layout.tsx",
+        "specifier": "@/lib/supabase/server",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "app/(workspace)/page.tsx",
+        "specifier": "@/data/analysis.json",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "app/(workspace)/page.tsx",
+        "specifier": "@/components/module-canvas",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "app/(workspace)/page.tsx",
+        "specifier": "@/lib/parser/types",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "app/layout.tsx",
+        "specifier": "@clerk/nextjs",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@clerk+nextjs@7.9.20_next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3_515d0f30d5259d13481943cb3935c338/node_modules/@clerk/nextjs/dist/types/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "app/layout.tsx",
+        "specifier": "next",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/next/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "app/layout.tsx",
+        "specifier": "next/font/google",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/next/font/google/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "app/layout.tsx",
+        "specifier": "./globals.css",
+        "kind": "import",
+        "status": "unresolved",
+        "reason": "No file matched the relative or absolute import path."
+      },
+      {
+        "importer": "app/sign-in/[[...sign-in]]/page.tsx",
+        "specifier": "@clerk/nextjs",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@clerk+nextjs@7.9.20_next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3_515d0f30d5259d13481943cb3935c338/node_modules/@clerk/nextjs/dist/types/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "app/sign-in/[[...sign-in]]/page.tsx",
+        "specifier": "react",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@types+react@19.3.0/node_modules/@types/react/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "app/sign-up/[[...sign-up]]/page.tsx",
+        "specifier": "@clerk/nextjs",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@clerk+nextjs@7.9.20_next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3_515d0f30d5259d13481943cb3935c338/node_modules/@clerk/nextjs/dist/types/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "app/sign-up/[[...sign-up]]/page.tsx",
+        "specifier": "react",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@types+react@19.3.0/node_modules/@types/react/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "components/app-shell.tsx",
+        "specifier": "react",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@types+react@19.3.0/node_modules/@types/react/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "components/app-shell.tsx",
+        "specifier": "next/link",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/next/link.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "components/app-shell.tsx",
+        "specifier": "@/components/organization-controls",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "components/app-shell.tsx",
+        "specifier": "@/components/theme-control",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "components/app-shell.tsx",
+        "specifier": "@/data/analysis.json",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "components/app-shell.tsx",
+        "specifier": "@/lib/parser/types",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "components/module-canvas.tsx",
+        "specifier": "react",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@types+react@19.3.0/node_modules/@types/react/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "components/module-canvas.tsx",
+        "specifier": "@/lib/parser/types",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "components/module-canvas.tsx",
+        "specifier": "@/lib/parser/folding",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "components/organization-controls.tsx",
+        "specifier": "@clerk/nextjs",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@clerk+nextjs@7.9.20_next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3_515d0f30d5259d13481943cb3935c338/node_modules/@clerk/nextjs/dist/types/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "components/theme-control.tsx",
+        "specifier": "react",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@types+react@19.3.0/node_modules/@types/react/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "eslint.config.mjs",
+        "specifier": "eslint/config",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/eslint@9.39.5_jiti@2.7.0/node_modules/eslint/lib/types/config-api.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "eslint.config.mjs",
+        "specifier": "eslint-config-next/core-web-vitals",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "eslint.config.mjs",
+        "specifier": "eslint-config-next/typescript",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "lib/env.ts",
+        "specifier": "server-only",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "lib/parser/adapter.ts",
+        "specifier": "./types",
+        "kind": "import",
+        "status": "resolved",
+        "resolvedPath": "lib/parser/types.ts"
+      },
+      {
+        "importer": "lib/parser/folding.ts",
+        "specifier": "./types",
+        "kind": "import",
+        "status": "resolved",
+        "resolvedPath": "lib/parser/types.ts"
+      },
+      {
+        "importer": "lib/parser/graph.ts",
+        "specifier": "./types",
+        "kind": "import",
+        "status": "resolved",
+        "resolvedPath": "lib/parser/types.ts"
+      },
+      {
+        "importer": "lib/parser/parse.ts",
+        "specifier": "node:crypto",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "lib/parser/parse.ts",
+        "specifier": "node:fs",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "lib/parser/parse.ts",
+        "specifier": "node:path",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "lib/parser/parse.ts",
+        "specifier": "ts-morph",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/ts-morph@28.0.0/node_modules/ts-morph/lib/ts-morph.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "lib/parser/parse.ts",
+        "specifier": "./adapter",
+        "kind": "import",
+        "status": "resolved",
+        "resolvedPath": "lib/parser/adapter.ts"
+      },
+      {
+        "importer": "lib/parser/parse.ts",
+        "specifier": "./graph",
+        "kind": "import",
+        "status": "resolved",
+        "resolvedPath": "lib/parser/graph.ts"
+      },
+      {
+        "importer": "lib/parser/parse.ts",
+        "specifier": "./types",
+        "kind": "import",
+        "status": "resolved",
+        "resolvedPath": "lib/parser/types.ts"
+      },
+      {
+        "importer": "lib/supabase/server.ts",
+        "specifier": "server-only",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "lib/supabase/server.ts",
+        "specifier": "@supabase/supabase-js",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@supabase+supabase-js@2.118.0/node_modules/@supabase/supabase-js/dist/index.d.cts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "lib/supabase/server.ts",
+        "specifier": "@/lib/env",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "next-env.d.ts",
+        "specifier": "./.next/types/routes.d.ts",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": ".next/types/routes.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "next-env.d.ts",
+        "specifier": "./.next/types/root-params.d.ts",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": ".next/types/root-params.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "next.config.ts",
+        "specifier": "next",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/next/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "proxy.ts",
+        "specifier": "@clerk/nextjs/server",
+        "kind": "import",
+        "status": "excluded",
+        "resolvedPath": "node_modules/.pnpm/@clerk+nextjs@7.9.20_next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3_515d0f30d5259d13481943cb3935c338/node_modules/@clerk/nextjs/dist/types/server/index.d.ts",
+        "reason": "The target exists inside the repository but was excluded from the file set."
+      },
+      {
+        "importer": "scripts/parse-repository.ts",
+        "specifier": "node:fs",
+        "kind": "import",
+        "status": "external",
+        "reason": "No local file matched this package import."
+      },
+      {
+        "importer": "scripts/parse-repository.ts",
+        "specifier": "../lib/parser/parse",
+        "kind": "import",
+        "status": "resolved",
+        "resolvedPath": "lib/parser/parse.ts"
+      },
+      {
+        "importer": "scripts/parse-repository.ts",
+        "specifier": "../lib/parser/types",
+        "kind": "import",
+        "status": "resolved",
+        "resolvedPath": "lib/parser/types.ts"
+      }
+    ],
+    "examples": {
+      "resolved": [],
+      "external": [
+        {
+          "importer": "app/(workspace)/layout.tsx",
+          "specifier": "@/components/app-shell",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "app/(workspace)/layout.tsx",
+          "specifier": "@/lib/supabase/server",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "app/(workspace)/page.tsx",
+          "specifier": "@/data/analysis.json",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "app/(workspace)/page.tsx",
+          "specifier": "@/components/module-canvas",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "app/(workspace)/page.tsx",
+          "specifier": "@/lib/parser/types",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "components/app-shell.tsx",
+          "specifier": "@/components/organization-controls",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "components/app-shell.tsx",
+          "specifier": "@/components/theme-control",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "components/app-shell.tsx",
+          "specifier": "@/data/analysis.json",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "components/app-shell.tsx",
+          "specifier": "@/lib/parser/types",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "components/module-canvas.tsx",
+          "specifier": "@/lib/parser/types",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "components/module-canvas.tsx",
+          "specifier": "@/lib/parser/folding",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "eslint.config.mjs",
+          "specifier": "eslint-config-next/core-web-vitals",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "eslint.config.mjs",
+          "specifier": "eslint-config-next/typescript",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "lib/env.ts",
+          "specifier": "server-only",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "lib/parser/parse.ts",
+          "specifier": "node:crypto",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "lib/parser/parse.ts",
+          "specifier": "node:fs",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "lib/parser/parse.ts",
+          "specifier": "node:path",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "lib/supabase/server.ts",
+          "specifier": "server-only",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "lib/supabase/server.ts",
+          "specifier": "@/lib/env",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        },
+        {
+          "importer": "scripts/parse-repository.ts",
+          "specifier": "node:fs",
+          "kind": "import",
+          "status": "external",
+          "reason": "No local file matched this package import."
+        }
+      ],
+      "excluded": [
+        {
+          "importer": "app/(workspace)/layout.tsx",
+          "specifier": "@clerk/nextjs/server",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/@clerk+nextjs@7.9.20_next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3_515d0f30d5259d13481943cb3935c338/node_modules/@clerk/nextjs/dist/types/server/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "app/(workspace)/layout.tsx",
+          "specifier": "react",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/@types+react@19.3.0/node_modules/@types/react/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "app/layout.tsx",
+          "specifier": "@clerk/nextjs",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/@clerk+nextjs@7.9.20_next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3_515d0f30d5259d13481943cb3935c338/node_modules/@clerk/nextjs/dist/types/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "app/layout.tsx",
+          "specifier": "next",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/next/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "app/layout.tsx",
+          "specifier": "next/font/google",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/next/font/google/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "app/sign-in/[[...sign-in]]/page.tsx",
+          "specifier": "@clerk/nextjs",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/@clerk+nextjs@7.9.20_next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3_515d0f30d5259d13481943cb3935c338/node_modules/@clerk/nextjs/dist/types/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "app/sign-in/[[...sign-in]]/page.tsx",
+          "specifier": "react",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/@types+react@19.3.0/node_modules/@types/react/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "app/sign-up/[[...sign-up]]/page.tsx",
+          "specifier": "@clerk/nextjs",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/@clerk+nextjs@7.9.20_next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3_515d0f30d5259d13481943cb3935c338/node_modules/@clerk/nextjs/dist/types/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "app/sign-up/[[...sign-up]]/page.tsx",
+          "specifier": "react",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/@types+react@19.3.0/node_modules/@types/react/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "components/app-shell.tsx",
+          "specifier": "react",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/@types+react@19.3.0/node_modules/@types/react/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "components/app-shell.tsx",
+          "specifier": "next/link",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/next/link.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "components/module-canvas.tsx",
+          "specifier": "react",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/@types+react@19.3.0/node_modules/@types/react/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "components/organization-controls.tsx",
+          "specifier": "@clerk/nextjs",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/@clerk+nextjs@7.9.20_next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3_515d0f30d5259d13481943cb3935c338/node_modules/@clerk/nextjs/dist/types/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "components/theme-control.tsx",
+          "specifier": "react",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/@types+react@19.3.0/node_modules/@types/react/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "eslint.config.mjs",
+          "specifier": "eslint/config",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/eslint@9.39.5_jiti@2.7.0/node_modules/eslint/lib/types/config-api.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "lib/parser/parse.ts",
+          "specifier": "ts-morph",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/ts-morph@28.0.0/node_modules/ts-morph/lib/ts-morph.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "lib/supabase/server.ts",
+          "specifier": "@supabase/supabase-js",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/@supabase+supabase-js@2.118.0/node_modules/@supabase/supabase-js/dist/index.d.cts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "next-env.d.ts",
+          "specifier": "./.next/types/routes.d.ts",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": ".next/types/routes.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "next-env.d.ts",
+          "specifier": "./.next/types/root-params.d.ts",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": ".next/types/root-params.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        },
+        {
+          "importer": "next.config.ts",
+          "specifier": "next",
+          "kind": "import",
+          "status": "excluded",
+          "resolvedPath": "node_modules/.pnpm/next@16.4.3_@babel+core@7.29.7_@types+node@20.19.43_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/next/index.d.ts",
+          "reason": "The target exists inside the repository but was excluded from the file set."
+        }
+      ],
+      "unresolved": [
+        {
+          "importer": "app/layout.tsx",
+          "specifier": "./globals.css",
+          "kind": "import",
+          "status": "unresolved",
+          "reason": "No file matched the relative or absolute import path."
+        }
+      ]
+    }
+  },
+  "adapter": "fallback"
+}
