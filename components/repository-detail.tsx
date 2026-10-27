@@ -12,6 +12,7 @@ type DetailProps = {
   edges: Edge[];
   adapter: string;
   root: string;
+  totalImports: number;
   skippedCount: number;
   selection: Selection;
   selectedNodeFiles: string[] | null;
@@ -34,8 +35,10 @@ function FileLink({
   highlightedFile,
   onSelect,
   onHover,
+  displayLabel,
 }: {
   path: string;
+  displayLabel?: string;
   highlightedFile: string | null;
   onSelect: (path: string) => void;
   onHover: (path: string | null) => void;
@@ -50,7 +53,7 @@ function FileLink({
       onMouseLeave={() => onHover(null)}
       type="button"
     >
-      {path}
+      {displayLabel ?? path}
     </button>
   );
 }
@@ -60,6 +63,7 @@ export function RepositoryDetail({
   edges,
   adapter,
   root,
+  totalImports,
   skippedCount,
   selection,
   selectedNodeFiles,
@@ -177,13 +181,13 @@ export function RepositoryDetail({
             <dl className="mt-3 grid grid-cols-2 gap-2 font-mono text-[10px]">
               <div><dt className="text-muted">framework</dt><dd>{adapter === "fallback" ? "not detected" : adapter}</dd></div>
               <div><dt className="text-muted">files</dt><dd>{files.length}</dd></div>
-              <div><dt className="text-muted">imports</dt><dd>{edges.length}</dd></div>
+              <div><dt className="text-muted">imports</dt><dd>{totalImports}</dd></div>
               <div><dt className="text-muted">routes</dt><dd>{routeCount}</dd></div>
             </dl>
           </section>
           <section>
             <SectionTitle>Most depended on</SectionTitle>
-            {topDependencies.map((file) => <FileLink key={file.path} path={`${file.path}  ${file.fanIn}`} highlightedFile={highlightedFile} onSelect={() => onSelectFile(file.path)} onHover={() => onHoverFile(file.path)} />)}
+            {topDependencies.map((file) => <FileLink key={file.path} path={file.path} displayLabel={`${file.path}  ${file.fanIn}`} highlightedFile={highlightedFile} onSelect={onSelectFile} onHover={onHoverFile} />)}
           </section>
           <section>
             <SectionTitle>Nothing imports</SectionTitle>

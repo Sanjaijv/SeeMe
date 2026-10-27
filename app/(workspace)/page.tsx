@@ -8,6 +8,10 @@ export default function WorkspacePage() {
   const result = analysis as ParserResult;
 
   return (
-    <ModuleCanvas files={result.files} edges={result.edges} />
+    <ModuleCanvas
+      files={result.files}
+      edges={result.edges}
+      totalImports={result.coverage.totalImports}
+    />
   );
 }

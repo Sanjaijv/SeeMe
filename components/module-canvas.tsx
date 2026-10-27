@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import type { Edge, ParsedFile } from "@/lib/parser/types";
 import {
@@ -23,9 +23,11 @@ function shortPath(path: string): string {
 export function ModuleCanvas({
   files,
   edges,
+  totalImports,
 }: {
   files: ParsedFile[];
   edges: Edge[];
+  totalImports: number;
 }) {
   const [openNode, setOpenNode] = useState<string | null>(null);
   const [selection, setSelection] = useState<
@@ -33,6 +35,7 @@ export function ModuleCanvas({
   >(null);
   const [highlightedFile, setHighlightedFile] = useState<string | null>(null);
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
   const nodes = useMemo(() => foldModules(files), [files]);
   const moduleEdges = useMemo(() => connectModules(nodes, edges), [nodes, edges]);
   const fileToNode = useMemo(
@@ -137,10 +140,10 @@ export function ModuleCanvas({
           const from = endpoint(edge.from, edge.fromFile);
           const to = endpoint(edge.to, edge.toFile);
           const dimmed =
-            activeNodes !== null &&
-            (selection?.type === "node"
-              ? !activeNodes.has(edge.from) || !activeNodes.has(edge.to)
-              : !activeNodes.has(edge.from) || !activeNodes.has(edge.to));
+            selection?.type === "file"
+              ? edge.fromFile !== selection.id && edge.toFile !== selection.id
+              : activeNodes !== null &&
+                (!activeNodes.has(edge.from) || !activeNodes.has(edge.to));
           return (
             <line
               className={dimmed ? "stroke-border/70" : "stroke-amber-400"}
@@ -156,6 +159,8 @@ export function ModuleCanvas({
         })}
       </svg>
       <div
+        ref={canvasRef}
+        onClick={() => setSelection(null)}
         className="relative z-10 w-[940px]"
         style={{ height: canvasHeight }}
       >
@@ -166,6 +171,8 @@ export function ModuleCanvas({
           const isDimmed = activeNodes !== null && !activeNodes.has(node.id);
           return (
             <section
+              data-node-id={node.id}
+              onClick={(event) => event.stopPropagation()}
               onMouseEnter={() => {
                 setHighlightedNode(node.id);
                 setHighlightedFile(node.files[0] ?? null);
@@ -176,7 +183,12 @@ export function ModuleCanvas({
               }}
               className={`absolute w-44 border bg-panel shadow-sm transition-opacity ${
                 isDimmed ? "opacity-45" : "opacity-100"
-              } ${isOpen ? "border-accent" : "border-border"}`}
+              } ${
+                isOpen ||
+                (highlightedFile !== null && node.files.includes(highlightedFile))
+                  ? "border-accent"
+                  : "border-border"
+              }`}
               key={node.id}
               style={{ left: position.x, minHeight: nodeHeights[nodes.indexOf(node)], top: position.y }}
             >
@@ -184,7 +196,21 @@ export function ModuleCanvas({
                 className="block w-full border-b border-border px-3 py-2 text-left hover:bg-panel-strong"
                 onClick={() => {
                   setSelection({ type: "node", id: node.id });
-                  setOpenNode(isOpen ? null : node.id);
+                  if (!isOpen) {
+                    setOpenNode(node.id);
+                    requestAnimationFrame(() => {
+                      canvasRef.current
+                        ?.querySelector<HTMLElement>(
+                          `[data-node-id="${node.id}"]`,
+                        )
+                        ?.scrollIntoView({
+                          block: "nearest",
+                          inline: "nearest",
+                        });
+                    });
+                  } else {
+                    setOpenNode(null);
+                  }
                 }}
                 type="button"
               >
@@ -248,6 +274,7 @@ export function ModuleCanvas({
         setOpenNode(fileToNode.get(path) ?? null);
       }}
       root={analysis.root}
+      totalImports={totalImports}
       selectedNodeFiles={
         selection?.type === "node"
           ? nodes.find((node) => node.id === selection.id)?.files ?? null

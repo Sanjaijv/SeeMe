@@ -39,7 +39,11 @@ function initialNodes(files: ParsedFile[]): WorkingNode[] {
     .sort((a, b) => b.path.split("/").length - a.path.split("/").length);
 }
 
-function foldAtThreshold(files: ParsedFile[], threshold: number): WorkingNode[] {
+function foldAtThreshold(
+  files: ParsedFile[],
+  threshold: number,
+  maxNodes = Number.POSITIVE_INFINITY,
+): WorkingNode[] {
   const byPath = new Map(
     initialNodes(files).map((node) => [node.path, node]),
   );
@@ -64,19 +68,34 @@ function foldAtThreshold(files: ParsedFile[], threshold: number): WorkingNode[] 
     }
   }
 
-  return [...byPath.values()].sort((a, b) => a.path.localeCompare(b.path));
-}
+  while (byPath.size > maxNodes) {
+    const candidates = [...byPath.values()]
+      .filter((node) => node.path !== "." && byPath.has(parentPath(node.path) ?? ""))
+      .sort(
+        (a, b) =>
+          a.files.length - b.files.length ||
+          b.path.split("/").length - a.path.split("/").length ||
+          a.path.localeCompare(b.path),
+      );
+    const node = candidates[0];
+    if (!node) break;
+    const parent = parentPath(node.path);
+    if (!parent) break;
+    const parentNode = byPath.get(parent);
+    if (!parentNode) break;
+    parentNode.files.push(...node.files);
+    parentNode.files.sort();
+    byPath.delete(node.path);
+  }
 
-function nodeCountAtThreshold(files: ParsedFile[], threshold: number): number {
-  return foldAtThreshold(files, threshold).length;
+  return [...byPath.values()].sort((a, b) => a.path.localeCompare(b.path));
 }
 
 export function foldModules(files: ParsedFile[]): ModuleNode[] {
   if (files.length === 0) return [];
 
-  let threshold = 2;
-  while (nodeCountAtThreshold(files, threshold) > 24) threshold += 1;
-  const folded = foldAtThreshold(files, threshold);
+  const threshold = 2;
+  const folded = foldAtThreshold(files, threshold, 24);
   const fileByPath = new Map(files.map((file) => [file.path, file]));
 
   return folded.map((node) => {
@@ -108,15 +127,11 @@ export function connectModules(
     for (const file of node.files) nodeByFile.set(file, node.id);
   }
 
-  const seen = new Set<string>();
   const result: ModuleEdge[] = [];
   for (const edge of edges) {
     const from = nodeByFile.get(edge.from);
     const to = nodeByFile.get(edge.to);
     if (!from || !to || from === to) continue;
-    const key = `${from}\0${to}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
     result.push({ from, to, fromFile: edge.from, toFile: edge.to });
   }
   return result;

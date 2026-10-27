@@ -106,10 +106,29 @@ function collectImports(
 }
 
 function resolverOptions(root: string): ts.CompilerOptions {
+  const configPath = ts.findConfigFile(root, ts.sys.fileExists, "tsconfig.json");
+  let configOptions: ts.CompilerOptions = {};
+  if (configPath) {
+    const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
+    if (configFile.error) {
+      throw new Error(
+        ts.flattenDiagnosticMessageText(configFile.error.messageText, "\n"),
+      );
+    }
+    configOptions = ts.parseJsonConfigFileContent(
+      configFile.config,
+      ts.sys,
+      path.dirname(configPath),
+      undefined,
+      configPath,
+    ).options;
+  }
   return {
+    ...configOptions,
     allowJs: true,
-    baseUrl: root,
-    moduleResolution: ts.ModuleResolutionKind.NodeJs,
+    baseUrl: configOptions.baseUrl ?? root,
+    moduleResolution:
+      configOptions.moduleResolution ?? ts.ModuleResolutionKind.NodeJs,
   };
 }
 
@@ -129,7 +148,18 @@ function resolveImport(
 
   if (resolution) {
     const resolvedPath = path.relative(root, resolution.resolvedFileName).split(path.sep).join("/");
-    if (path.isAbsolute(resolution.resolvedFileName) && !resolvedPath.startsWith("..")) {
+    const isInsideRoot =
+      path.isAbsolute(resolution.resolvedFileName) &&
+      !resolvedPath.startsWith("..") &&
+      !resolvedPath.startsWith("../");
+    if (isInsideRoot && resolvedPath.split("/").includes("node_modules")) {
+      return {
+        status: "external",
+        resolvedPath,
+        reason: "The import resolves to an ignored dependency directory.",
+      };
+    }
+    if (isInsideRoot) {
       if (selected.has(resolvedPath)) {
         return { status: "resolved", resolvedPath };
       }
@@ -148,6 +178,17 @@ function resolveImport(
 
   if (!specifier.startsWith(".") && !path.isAbsolute(specifier)) {
     return { status: "external", reason: "No local file matched this package import." };
+  }
+  const unresolvedTarget = path.resolve(path.dirname(containingFile), specifier);
+  if (
+    fs.existsSync(unresolvedTarget) &&
+    fs.statSync(unresolvedTarget).isFile()
+  ) {
+    return {
+      status: "excluded",
+      resolvedPath: path.relative(root, unresolvedTarget).split(path.sep).join("/"),
+      reason: "The target exists but its file extension is not parsed.",
+    };
   }
   return {
     status: "unresolved",
