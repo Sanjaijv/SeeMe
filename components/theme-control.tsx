@@ -34,7 +34,6 @@ function subscribeToTheme(listener: () => void): () => void {
 
 function applyTheme(theme: Theme) {
   document.documentElement.dataset.theme = theme;
-  localStorage.setItem(themeStorageKey, theme);
 }
 
 export function ThemeControl() {
@@ -45,11 +44,12 @@ export function ThemeControl() {
   );
 
   useEffect(() => {
-    applyTheme(theme);
+    applyTheme(readStoredTheme());
   }, [theme]);
 
   function changeTheme(nextTheme: Theme) {
     applyTheme(nextTheme);
+    localStorage.setItem(themeStorageKey, nextTheme);
     for (const listener of themeListeners) {
       listener();
     }

@@ -7,7 +7,6 @@ import {
   connectModules,
   foldModules,
 } from "@/lib/parser/folding";
-import analysis from "@/data/analysis.json";
 import { RepositoryDetail } from "@/components/repository-detail";
 import { useActiveCategory } from "@/components/app-shell";
 
@@ -22,12 +21,20 @@ function shortPath(path: string): string {
 }
 
 export function ModuleCanvas({
+  adapter,
+  coverage,
   files,
   edges,
+  root,
+  skippedCount,
   totalImports,
 }: {
+  adapter: string;
+  coverage: { totalImports: number; counts: Record<string, number> } | null;
   files: ParsedFile[];
   edges: Edge[];
+  root: string;
+  skippedCount: number;
   totalImports: number;
 }) {
   const [openNode, setOpenNode] = useState<string | null>(null);
@@ -43,6 +50,10 @@ export function ModuleCanvas({
   const fileToNode = useMemo(
     () => new Map(nodes.flatMap((node) => node.files.map((file) => [file, node.id]))),
     [nodes],
+  );
+  const fileByPath = useMemo(
+    () => new Map(files.map((file) => [file.path, file])),
+    [files],
   );
   const selectedNode =
     selection?.type === "node"
@@ -143,11 +154,8 @@ export function ModuleCanvas({
           const to = endpoint(edge.to, edge.toFile);
           const dimmed =
             activeCategory !== null &&
-            !files.some(
-              (file) =>
-                file.moduleKind === activeCategory &&
-                (file.path === edge.from || file.path === edge.to),
-            )
+            fileByPath.get(edge.fromFile)?.moduleKind !== activeCategory &&
+            fileByPath.get(edge.toFile)?.moduleKind !== activeCategory
             ? true
             : selection?.type === "file"
               ? edge.fromFile !== selection.id && edge.toFile !== selection.id
@@ -279,7 +287,8 @@ export function ModuleCanvas({
       </div>
     </main>
     <RepositoryDetail
-      adapter={analysis.adapter}
+      adapter={adapter}
+      coverage={coverage}
       edges={edges}
       files={files}
       highlightedFile={highlightedFile}
@@ -289,7 +298,7 @@ export function ModuleCanvas({
         setSelection({ type: "file", id: path });
         setOpenNode(fileToNode.get(path) ?? null);
       }}
-      root={analysis.root}
+      root={root}
       totalImports={totalImports}
       selectedNodeFiles={
         selection?.type === "node"
@@ -297,7 +306,7 @@ export function ModuleCanvas({
           : null
       }
       selection={selection}
-      skippedCount={files.filter((file) => file.adapterRole === null).length}
+      skippedCount={skippedCount}
     />
     </>
   );
