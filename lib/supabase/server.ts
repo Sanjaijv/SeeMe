@@ -11,3 +11,9 @@ export function createSupabaseServerClient(
     accessToken: getToken,
   });
 }
+
+export function createSupabaseAdminClient() {
+  return createClient(env.supabaseUrl, env.supabaseSecretKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}

@@ -16,6 +16,7 @@ type DetailProps = {
   root: string;
   totalImports: number;
   skippedCount: number;
+  coverage: { totalImports: number; counts: Record<string, number> } | null;
   selection: Selection;
   selectedNodeFiles: string[] | null;
   highlightedNode: string | null;
@@ -67,6 +68,7 @@ export function RepositoryDetail({
   root,
   totalImports,
   skippedCount,
+  coverage,
   selection,
   selectedNodeFiles,
   highlightedNode,
@@ -236,6 +238,11 @@ export function RepositoryDetail({
             {unimported.map((file) => <FileLink key={file.path} path={file.path} highlightedFile={highlightedFile} onSelect={onSelectFile} onHover={onHoverFile} />)}
           </section>
           <p className="font-mono text-[10px] text-muted">{skippedCount} files had no identified convention.</p>
+          {coverage && coverage.totalImports > 0 ? (
+            <p className="border border-amber-500/40 bg-amber-500/5 px-2 py-2 font-mono text-[10px] text-muted">
+              Coverage: {Math.round((coverage.counts.resolved / coverage.totalImports) * 100)}% of imports resolved.
+            </p>
+          ) : null}
           <section>
             <SectionTitle>Insights</SectionTitle>
             <div className="space-y-2">
