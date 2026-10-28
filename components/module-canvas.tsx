@@ -9,6 +9,7 @@ import {
 } from "@/lib/parser/folding";
 import analysis from "@/data/analysis.json";
 import { RepositoryDetail } from "@/components/repository-detail";
+import { useActiveCategory } from "@/components/app-shell";
 
 const categoryColors: Record<ParsedFile["moduleKind"], string> = {
   source: "bg-accent",
@@ -35,6 +36,7 @@ export function ModuleCanvas({
   >(null);
   const [highlightedFile, setHighlightedFile] = useState<string | null>(null);
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
+  const activeCategory = useActiveCategory();
   const canvasRef = useRef<HTMLDivElement>(null);
   const nodes = useMemo(() => foldModules(files), [files]);
   const moduleEdges = useMemo(() => connectModules(nodes, edges), [nodes, edges]);
@@ -140,7 +142,14 @@ export function ModuleCanvas({
           const from = endpoint(edge.from, edge.fromFile);
           const to = endpoint(edge.to, edge.toFile);
           const dimmed =
-            selection?.type === "file"
+            activeCategory !== null &&
+            !files.some(
+              (file) =>
+                file.moduleKind === activeCategory &&
+                (file.path === edge.from || file.path === edge.to),
+            )
+            ? true
+            : selection?.type === "file"
               ? edge.fromFile !== selection.id && edge.toFile !== selection.id
               : activeNodes !== null &&
                 (!activeNodes.has(edge.from) || !activeNodes.has(edge.to));
@@ -169,6 +178,11 @@ export function ModuleCanvas({
           if (!position) return null;
           const isOpen = openNode === node.id;
           const isDimmed = activeNodes !== null && !activeNodes.has(node.id);
+          const categoryDimmed =
+            activeCategory !== null &&
+            !node.files.some(
+              (file) => files.find((item) => item.path === file)?.moduleKind === activeCategory,
+            );
           return (
             <section
               data-node-id={node.id}
@@ -182,7 +196,7 @@ export function ModuleCanvas({
                 setHighlightedNode(null);
               }}
               className={`absolute w-44 border bg-panel shadow-sm transition-opacity ${
-                isDimmed ? "opacity-45" : "opacity-100"
+                isDimmed || categoryDimmed ? "opacity-45" : "opacity-100"
               } ${
                 isOpen ||
                 (highlightedFile !== null && node.files.includes(highlightedFile))
@@ -229,7 +243,9 @@ export function ModuleCanvas({
                     return (
                       <button
                         className={`flex w-full items-center gap-2 px-3 py-1.5 text-left font-mono text-[10px] hover:bg-panel-strong ${
-                          activeFiles && !activeFiles.has(file)
+                          (activeFiles && !activeFiles.has(file)) ||
+                          (activeCategory !== null &&
+                            parsedFile?.moduleKind !== activeCategory)
                             ? "opacity-25"
                             : highlightedFile === file
                               ? "bg-accent/20 text-accent"

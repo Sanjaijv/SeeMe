@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import type { Edge, ParsedFile } from "@/lib/parser/types";
+import { traverseGraph } from "@/lib/parser/graph";
+import { findInsights } from "@/lib/parser/insights";
 
 type Selection =
   | { type: "node"; id: string }
@@ -90,13 +92,27 @@ export function RepositoryDetail({
     .filter((file) => file.fanIn > 0)
     .sort((a, b) => b.fanIn - a.fanIn || a.path.localeCompare(b.path))
     .slice(0, 5);
+  const insights = useMemo(() => findInsights(files, edges), [edges, files]);
+  const unimportedFiles = new Set(
+    insights.find((insight) => insight.kind === "unimported")?.files ?? [],
+  );
   const unimported = files
-    .filter((file) => file.fanIn === 0)
+    .filter((file) => unimportedFiles.has(file.path))
     .sort((a, b) => a.path.localeCompare(b.path))
     .slice(0, 5);
   const routeCount = files.filter((file) =>
     /(^|\/)(app|pages)\/.*(page|route)\.(tsx?|jsx?)$/.test(file.path),
   ).length;
+  const [activeGraph, setActiveGraph] = useState<"blast" | "dependencies" | null>(
+    null,
+  );
+  const graphFiles = selectedFile && activeGraph
+    ? [...traverseGraph(
+        selectedFile.path,
+        edges,
+        activeGraph === "blast" ? "reverse" : "forward",
+      )].sort()
+    : [];
 
   return (
     <aside className="min-w-0 overflow-y-auto border-l border-border bg-panel p-4">
@@ -155,6 +171,32 @@ export function RepositoryDetail({
             <SectionTitle>Imported by</SectionTitle>
             <div>{dependents.map((path) => <FileLink key={path} path={path} highlightedFile={highlightedFile} onSelect={onSelectFile} onHover={onHoverFile} />)}</div>
           </div>
+          <div className="flex gap-2">
+            {(["blast", "dependencies"] as const).map((kind) => (
+              <button
+                className={`border px-2 py-1 font-mono text-[10px] ${
+                  activeGraph === kind
+                    ? "border-accent text-accent"
+                    : "border-border text-muted hover:bg-panel-strong"
+                }`}
+                key={kind}
+                onClick={() => setActiveGraph(activeGraph === kind ? null : kind)}
+                type="button"
+              >
+                {kind === "blast" ? "Blast radius" : "Dependency chain"}
+              </button>
+            ))}
+          </div>
+          {activeGraph ? (
+            <div>
+              <SectionTitle>
+                {activeGraph === "blast" ? "Breaks if changed" : "Needs"}
+              </SectionTitle>
+              {graphFiles.map((path) => (
+                <FileLink key={path} path={path} highlightedFile={highlightedFile} onSelect={onSelectFile} onHover={onHoverFile} />
+              ))}
+            </div>
+          ) : null}
         </div>
       ) : selectedNode ? (
         <div className="mt-4">
@@ -194,6 +236,25 @@ export function RepositoryDetail({
             {unimported.map((file) => <FileLink key={file.path} path={file.path} highlightedFile={highlightedFile} onSelect={onSelectFile} onHover={onHoverFile} />)}
           </section>
           <p className="font-mono text-[10px] text-muted">{skippedCount} files had no identified convention.</p>
+          <section>
+            <SectionTitle>Insights</SectionTitle>
+            <div className="space-y-2">
+              {insights.map((insight) => (
+                <details className="border border-border" key={insight.kind}>
+                  <summary className="cursor-pointer list-none px-2 py-2 font-mono text-[10px] text-muted">
+                    <span className="text-foreground">{insight.files.length}</span>{" "}
+                    {insight.kind}
+                  </summary>
+                  <div className="border-t border-border px-2 py-2">
+                    <p className="font-mono text-[10px] text-muted">{insight.sentence}</p>
+                    {insight.files.map((path) => (
+                      <FileLink key={path} path={path} highlightedFile={highlightedFile} onSelect={onSelectFile} onHover={onHoverFile} />
+                    ))}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
         </div>
       )}
     </aside>

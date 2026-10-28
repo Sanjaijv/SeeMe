@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { createContext, useContext, useState, type ReactNode } from "react";
 import Link from "next/link";
 
 import { OrganizationControls } from "@/components/organization-controls";
@@ -12,11 +14,19 @@ const categoryColors: Record<ParsedFile["moduleKind"], string> = {
   config: "bg-amber-500",
 };
 
+type Category = ParsedFile["moduleKind"];
+const CategoryContext = createContext<Category | null>(null);
+
+export function useActiveCategory(): Category | null {
+  return useContext(CategoryContext);
+}
+
 export function AppShell({
   children,
 }: {
   children: ReactNode;
 }) {
+  const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const files = analysis.files as ParsedFile[];
   const categories = (["source", "declaration", "config"] as const).map(
     (kind) => ({
@@ -49,9 +59,18 @@ export function AppShell({
           </div>
           <div className="mt-4 space-y-1">
             {categories.map((category) => (
-              <div
-                className="flex items-center justify-between px-2 py-1.5 font-mono text-[11px] text-muted"
+              <button
+                aria-pressed={activeCategory === category.kind}
+                className={`flex w-full items-center justify-between px-2 py-1.5 text-left font-mono text-[11px] text-muted hover:bg-panel-strong ${
+                  activeCategory === category.kind ? "bg-panel-strong text-foreground" : ""
+                }`}
                 key={category.kind}
+                onClick={() =>
+                  setActiveCategory((current) =>
+                    current === category.kind ? null : category.kind,
+                  )
+                }
+                type="button"
               >
                 <span className="flex items-center gap-2">
                   <span
@@ -60,11 +79,13 @@ export function AppShell({
                   {category.kind}
                 </span>
                 <span>{category.count}</span>
-              </div>
+              </button>
             ))}
           </div>
         </aside>
-        {children}
+        <CategoryContext.Provider value={activeCategory}>
+          {children}
+        </CategoryContext.Provider>
       </div>
     </div>
   );
