@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { AppShell } from "@/components/app-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+export const instant = false;
+
 export default async function WorkspaceLayout({
   children,
 }: {
@@ -18,6 +20,6 @@ export default async function WorkspaceLayout({
   void createSupabaseServerClient(session.getToken);
 
   return (
-    <AppShell organizationId={session.orgId ?? null}>{children}</AppShell>
+    <AppShell>{children}</AppShell>
   );
 }

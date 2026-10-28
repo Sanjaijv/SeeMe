@@ -7,7 +7,7 @@ import { env } from "@/lib/env";
 export function createSupabaseServerClient(
   getToken: () => Promise<string | null>,
 ) {
-  return createClient(env.supabaseUrl, env.supabaseAnonKey, {
+  return createClient(env.supabaseUrl, env.supabasePublishableKey, {
     accessToken: getToken,
   });
 }

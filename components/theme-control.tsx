@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 type Theme = "system" | "light" | "dark";
 
@@ -10,32 +10,49 @@ const themes: Array<{ value: Theme; label: string }> = [
   { value: "dark", label: "Dark" },
 ];
 
+const themeStorageKey = "seeme-theme";
+const themeListeners = new Set<() => void>();
+
+function readStoredTheme(): Theme {
+  const storedTheme = localStorage.getItem(themeStorageKey);
+  return storedTheme === "light" ||
+    storedTheme === "dark" ||
+    storedTheme === "system"
+    ? storedTheme
+    : "system";
+}
+
+function subscribeToTheme(listener: () => void): () => void {
+  themeListeners.add(listener);
+  window.addEventListener("storage", listener);
+
+  return () => {
+    themeListeners.delete(listener);
+    window.removeEventListener("storage", listener);
+  };
+}
+
 function applyTheme(theme: Theme) {
   document.documentElement.dataset.theme = theme;
-  localStorage.setItem("seeme-theme", theme);
+  localStorage.setItem(themeStorageKey, theme);
 }
 
 export function ThemeControl() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") {
-      return "system";
-    }
-
-    const storedTheme = localStorage.getItem("seeme-theme");
-    return storedTheme === "light" ||
-      storedTheme === "dark" ||
-      storedTheme === "system"
-      ? storedTheme
-      : "system";
-  });
+  const theme = useSyncExternalStore(
+    subscribeToTheme,
+    readStoredTheme,
+    (): Theme => "system",
+  );
 
   useEffect(() => {
     applyTheme(theme);
   }, [theme]);
 
   function changeTheme(nextTheme: Theme) {
-    setTheme(nextTheme);
     applyTheme(nextTheme);
+    for (const listener of themeListeners) {
+      listener();
+    }
   }
 
   return (
