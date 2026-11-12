@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import type { Edge, ParsedFile } from "@/lib/parser/types";
+import type { Edge, ParsedFile, Route } from "@/lib/parser/types";
 import { traverseGraph } from "@/lib/parser/graph";
 import { findInsights, matchesRouteFile } from "@/lib/parser/insights";
 
@@ -23,6 +23,7 @@ type DetailProps = {
   highlightedFile: string | null;
   onSelectFile: (path: string) => void;
   onHoverFile: (path: string | null) => void;
+  routes: Route[];
 };
 
 function SectionTitle({ children }: { children: string }) {
@@ -75,6 +76,7 @@ export function RepositoryDetail({
   highlightedFile,
   onSelectFile,
   onHoverFile,
+  routes,
 }: DetailProps) {
   const [activeTab, setActiveTab] = useState<"structure" | "explanation">(
     "structure",
@@ -102,7 +104,7 @@ export function RepositoryDetail({
     .filter((file) => unimportedFiles.has(file.path))
     .sort((a, b) => a.path.localeCompare(b.path))
     .slice(0, 5);
-  const routeCount = files.filter((file) => matchesRouteFile(file.path)).length;
+  const routeCount = routes.length || files.filter((file) => matchesRouteFile(file.path)).length;
   const [activeGraph, setActiveGraph] = useState<"blast" | "dependencies" | null>(
     null,
   );
@@ -217,6 +219,26 @@ export function RepositoryDetail({
         </div>
       ) : (
         <div className="mt-4 space-y-5">
+          <section>
+            <SectionTitle>Routes</SectionTitle>
+            {routes.length > 0 ? (
+              <div className="divide-y divide-border border-y border-border">
+                {routes.map((route) => (
+                  <button
+                    className="flex w-full items-center gap-2 px-2 py-2 text-left font-mono text-[10px] hover:bg-panel-strong"
+                    key={`${route.file}\0${route.method}\0${route.path}`}
+                    onClick={() => onSelectFile(route.file)}
+                    type="button"
+                  >
+                    <span className="w-12 shrink-0 text-accent">{route.method}</span>
+                    <span className="truncate">{route.path}</span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="font-mono text-[10px] text-muted">No routes recovered.</p>
+            )}
+          </section>
           <section>
             <SectionTitle>Repository</SectionTitle>
             <p className="font-mono text-xs font-semibold">{rootName}</p>

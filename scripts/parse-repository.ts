@@ -26,6 +26,7 @@ function printSummary(result: ParserResult): void {
   for (const skipped of result.skipped) console.log(`  skipped ${skipped.path}: ${skipped.reason}`);
   console.log(`Folders: ${new Set(result.files.map((file) => file.folder)).size}`);
   console.log(`Edges: ${result.edges.length}`);
+  console.log(`Routes: ${result.routes.length}`);
   console.log(`Imports: ${result.coverage.totalImports}`);
   const reExports = result.coverage.imports.filter((item) => item.kind === "re-export");
   console.log(

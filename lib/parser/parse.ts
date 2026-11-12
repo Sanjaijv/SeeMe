@@ -9,7 +9,7 @@ import {
   type SourceFile,
 } from "ts-morph";
 
-import { createFallbackAdapter } from "./adapter";
+import { detectFrameworkAdapter } from "./adapter";
 import { addGraphMetrics } from "./graph";
 import type {
   CoverageReport,
@@ -19,6 +19,7 @@ import type {
   ImportKind,
   ParsedFile,
   ParserResult,
+  Route,
   SkippedFile,
 } from "./types";
 
@@ -240,12 +241,13 @@ function createCoverage(): CoverageReport {
 
 export function parseRepository(
   inputRoot: string,
-  adapter: FrameworkAdapter = createFallbackAdapter(),
+  adapter?: FrameworkAdapter,
 ): ParserResult {
   const root = path.resolve(inputRoot);
   if (!fs.statSync(root).isDirectory()) throw new Error(`Not a directory: ${inputRoot}`);
 
   const discovered = discoverFiles(root);
+  const selectedAdapter = adapter ?? detectFrameworkAdapter(root, discovered.map((file) => file.relativePath));
   const files: ParsedFile[] = [];
   const skipped: SkippedFile[] = [];
   const sourceByRelativePath = new Map<string, SourceFile>();
@@ -264,6 +266,7 @@ export function parseRepository(
     try {
       const contents = fs.readFileSync(file.absolutePath, "utf8");
       const relativePath = file.relativePath;
+      const sourceFile = project.createSourceFile(file.absolutePath, contents, { overwrite: true });
       files.push({
         path: relativePath,
         folder: path.posix.dirname(relativePath) === "." ? "." : path.posix.dirname(relativePath),
@@ -271,14 +274,11 @@ export function parseRepository(
         lines: countLines(contents),
         hash: crypto.createHash("sha256").update(contents).digest("hex"),
         moduleKind: moduleKind(relativePath),
-        adapterRole: adapter.identifyFile(relativePath),
+        adapterRole: selectedAdapter.identifyFile(relativePath, sourceFile),
         fanIn: 0,
         fanOut: 0,
       });
-      sourceByRelativePath.set(
-        relativePath,
-        project.createSourceFile(file.absolutePath, contents, { overwrite: true }),
-      );
+      sourceByRelativePath.set(relativePath, sourceFile);
     } catch (error) {
       skipped.push({
         path: file.relativePath,
@@ -291,6 +291,7 @@ export function parseRepository(
   const coverage = createCoverage();
   const edgeKeys = new Set<string>();
   const edges: Edge[] = [];
+  const routes: Route[] = [];
 
   for (const [importer, sourceFile] of sourceByRelativePath) {
     for (const item of collectImports(sourceFile)) {
@@ -331,6 +332,10 @@ export function parseRepository(
     }
   }
 
+  for (const [filePath, sourceFile] of sourceByRelativePath) {
+    routes.push(...selectedAdapter.routesForFile(filePath, sourceFile));
+  }
+
   addGraphMetrics(files, edges);
   return {
     version: 1,
@@ -339,6 +344,7 @@ export function parseRepository(
     edges,
     skipped,
     coverage,
-    adapter: adapter.name,
+    adapter: selectedAdapter.name,
+    routes,
   };
 }
