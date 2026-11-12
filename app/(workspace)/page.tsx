@@ -1,19 +1,32 @@
 import { RepositoryForm } from "@/components/repository-form";
 import { AnalysisChannelListener } from "@/components/analysis-channel-listener";
 import { auth } from "@clerk/nextjs/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const instant = false;
 
 export default async function WorkspacePage() {
   const session = await auth();
-  const client = createSupabaseAdminClient();
+  if (!session.isAuthenticated || !session.orgId) {
+    return null;
+  }
+  const client = createSupabaseServerClient(() => session.getToken({ template: "supabase" }));
   const { data: analyses, error } = await client
     .from("analyses")
     .select("id, status, stage, stage_message, started_at, created_at, projects(name, repository_url)")
-    .eq("organization_id", session.orgId)
     .order("created_at", { ascending: false });
   if (error) {
+    if (error.message.includes("fetch failed")) {
+      return (
+        <main className="col-span-2 p-8">
+          <h1 className="font-mono text-sm">Database unavailable</h1>
+          <p className="mt-3 max-w-xl text-xs leading-5 text-muted">
+            Seeme could not reach Supabase. Check that NEXT_PUBLIC_SUPABASE_URL in
+            .env.local points to an active Supabase project, then reload this page.
+          </p>
+        </main>
+      );
+    }
     if (error.code === "42703" && error.message.includes("analyses.stage")) {
       return (
         <main className="col-span-2 p-8">

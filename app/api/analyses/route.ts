@@ -1,5 +1,4 @@
 import { auth } from "@clerk/nextjs/server";
-import { after } from "next/server";
 
 import { runAnalysis } from "@/lib/analysis/pipeline";
 import { parseRepositoryUrl } from "@/lib/analysis/repository-url";
@@ -11,8 +10,13 @@ export async function POST(request: Request) {
     return Response.json({ error: "Select an organization before analysing a repository." }, { status: 401 });
   }
 
-  const body = (await request.json()) as { url?: unknown };
-  if (typeof body.url !== "string") {
+  let body: { url?: unknown } | null;
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json({ error: "A repository URL is required." }, { status: 400 });
+  }
+  if (body == null || typeof body.url !== "string") {
     return Response.json({ error: "A repository URL is required." }, { status: 400 });
   }
 
@@ -80,6 +84,6 @@ export async function POST(request: Request) {
     .single();
   if (analysisError) return Response.json({ error: analysisError.message }, { status: 500 });
 
-  after(() => runAnalysis(client, analysis, reference));
+  void runAnalysis(client, analysis, reference);
   return Response.json({ analysisId: analysis.id, existing: false }, { status: 202 });
 }

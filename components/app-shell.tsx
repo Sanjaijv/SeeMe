@@ -22,11 +22,12 @@ export function useActiveCategory(): Category | null {
 
 export function AppShell({
   children,
+  files = [],
 }: {
   children: ReactNode;
+  files?: ParsedFile[];
 }) {
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
-  const files: ParsedFile[] = [];
   const categories = (["source", "declaration", "config"] as const).map(
     (kind) => ({
       kind,

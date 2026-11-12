@@ -17,6 +17,7 @@ export function traverseGraph(
     adjacent.set(from, neighbours);
   }
 
+  const visited = new Set<string>([start]);
   const reached = new Set<string>();
   const queue: Array<{ path: string; depth: number }> = [
     { path: start, depth: 0 },
@@ -25,7 +26,8 @@ export function traverseGraph(
     const current = queue.shift();
     if (!current || current.depth >= maxDepth) continue;
     for (const neighbour of adjacent.get(current.path) ?? []) {
-      if (reached.has(neighbour)) continue;
+      if (visited.has(neighbour)) continue;
+      visited.add(neighbour);
       reached.add(neighbour);
       queue.push({ path: neighbour, depth: current.depth + 1 });
     }

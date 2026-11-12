@@ -3,22 +3,23 @@ import { notFound } from "next/navigation";
 
 import { ModuleCanvas } from "@/components/module-canvas";
 import { AnalysisProgress } from "@/components/analysis-progress";
-import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import type { Edge, ParsedFile } from "@/lib/parser/types";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type Props = { params: Promise<{ id: string }> };
 
 export const instant = false;
+export const prefetch = "force-disabled";
 
 export default async function AnalysisPage({ params }: Props) {
   const session = await auth();
   if (!session.isAuthenticated || !session.orgId) notFound();
   const { id } = await params;
-  const client = createSupabaseAdminClient();
+  const client = createSupabaseServerClient(() => session.getToken({ template: "supabase" }));
   const { data: analysis, error: analysisError } = await client
     .from("analyses")
     .select("id, status, stage, stage_message, error_message, started_at, root, adapter, coverage, skipped")
     .eq("id", id)
-    .eq("organization_id", session.orgId)
     .maybeSingle();
   if (analysisError) throw new Error(analysisError.message);
   if (!analysis) notFound();
@@ -41,26 +42,41 @@ export default async function AnalysisPage({ params }: Props) {
     );
   }
 
-  const [{ data: files }, { data: storedEdges }] = await Promise.all([
-    client.from("files").select("id, path, language, lines, hash, module_kind, adapter_role, fan_in, fan_out").eq("analysis_id", id),
-    client.from("edges").select("from_file_id, to_file_id, kind, specifier").eq("analysis_id", id),
+  const pageSize = 1000;
+  const fetchAll = async <T,>(query: ReturnType<typeof client.from>, select: string): Promise<T[]> => {
+    const all: T[] = [];
+    let from = 0;
+    while (true) {
+      const { data, error } = await query.select(select).eq("analysis_id", id).order("id", { ascending: true }).range(from, from + pageSize - 1);
+      if (error) throw new Error(error.message);
+      const rows = (data ?? []) as T[];
+      all.push(...rows);
+      if (rows.length < pageSize) break;
+      from += pageSize;
+    }
+    return all;
+  };
+
+  const [files, storedEdges] = await Promise.all([
+    fetchAll<{ id: string; path: string; language: string | null; lines: number; hash: string | null; module_kind: string | null; adapter_role: string | null; fan_in: number | null; fan_out: number | null }>(client.from("files"), "id, path, language, lines, hash, module_kind, adapter_role, fan_in, fan_out"),
+    fetchAll<{ from_file_id: string; to_file_id: string; kind: "import" | "re-export" | "dynamic-import"; specifier: string | null }>(client.from("edges"), "from_file_id, to_file_id, kind, specifier"),
   ]);
-  const fileById = new Map((files ?? []).map((file) => [file.id, file.path]));
-  const parsedFiles = (files ?? []).map((file) => ({
+  const fileById = new Map(files.map((file) => [file.id, file.path]));
+  const parsedFiles: ParsedFile[] = files.map((file) => ({
     path: file.path,
     folder: file.path.includes("/") ? file.path.slice(0, file.path.lastIndexOf("/")) : ".",
     extension: file.language ? `.${file.language}` : "",
     lines: file.lines,
     hash: file.hash ?? "",
-    moduleKind: file.module_kind ?? "source",
+    moduleKind: (file.module_kind === "declaration" || file.module_kind === "config" ? file.module_kind : "source") as ParsedFile["moduleKind"],
     adapterRole: file.adapter_role,
-    fanIn: file.fan_in,
-    fanOut: file.fan_out,
+    fanIn: file.fan_in ?? 0,
+    fanOut: file.fan_out ?? 0,
   }));
-  const edges = (storedEdges ?? []).flatMap((edge) => {
+  const edges: Edge[] = storedEdges.flatMap((edge) => {
     const from = fileById.get(edge.from_file_id);
     const to = fileById.get(edge.to_file_id);
-    return from && to ? [{ from, to, kind: edge.kind, specifier: edge.specifier }] : [];
+    return from && to ? [{ from, to, kind: edge.kind, specifier: edge.specifier ?? "" }] : [];
   });
 
   return (

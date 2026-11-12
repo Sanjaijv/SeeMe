@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import type { Edge, ParsedFile } from "@/lib/parser/types";
 import { traverseGraph } from "@/lib/parser/graph";
-import { findInsights } from "@/lib/parser/insights";
+import { findInsights, matchesRouteFile } from "@/lib/parser/insights";
 
 type Selection =
   | { type: "node"; id: string }
@@ -102,9 +102,7 @@ export function RepositoryDetail({
     .filter((file) => unimportedFiles.has(file.path))
     .sort((a, b) => a.path.localeCompare(b.path))
     .slice(0, 5);
-  const routeCount = files.filter((file) =>
-    /(^|\/)(app|pages)\/.*(page|route)\.(tsx?|jsx?)$/.test(file.path),
-  ).length;
+  const routeCount = files.filter((file) => matchesRouteFile(file.path)).length;
   const [activeGraph, setActiveGraph] = useState<"blast" | "dependencies" | null>(
     null,
   );

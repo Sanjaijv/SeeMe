@@ -14,12 +14,16 @@ const themeStorageKey = "seeme-theme";
 const themeListeners = new Set<() => void>();
 
 function readStoredTheme(): Theme {
-  const storedTheme = localStorage.getItem(themeStorageKey);
-  return storedTheme === "light" ||
-    storedTheme === "dark" ||
-    storedTheme === "system"
-    ? storedTheme
-    : "system";
+  try {
+    const storedTheme = localStorage.getItem(themeStorageKey);
+    return storedTheme === "light" ||
+      storedTheme === "dark" ||
+      storedTheme === "system"
+      ? storedTheme
+      : "system";
+  } catch {
+    return "system";
+  }
 }
 
 function subscribeToTheme(listener: () => void): () => void {
@@ -44,12 +48,16 @@ export function ThemeControl() {
   );
 
   useEffect(() => {
-    applyTheme(readStoredTheme());
+    applyTheme(theme);
   }, [theme]);
 
   function changeTheme(nextTheme: Theme) {
     applyTheme(nextTheme);
-    localStorage.setItem(themeStorageKey, nextTheme);
+    try {
+      localStorage.setItem(themeStorageKey, nextTheme);
+    } catch {
+      // Storage unavailable; skip persistence without crashing.
+    }
     for (const listener of themeListeners) {
       listener();
     }

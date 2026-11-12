@@ -24,7 +24,8 @@ function assertResponse(response: Response, description: string): void {
 }
 
 async function selectArchive(archive: Buffer, destination: string): Promise<void> {
-  const tar = gunzipSync(archive);
+  const MAX_DECOMPRESSED_ARCHIVE_BYTES = 256 * 1024 * 1024;
+  const tar = gunzipSync(archive, { maxOutputLength: MAX_DECOMPRESSED_ARCHIVE_BYTES });
   let offset = 0;
   while (offset + 512 <= tar.length) {
     const header = tar.subarray(offset, offset + 512);
@@ -134,7 +135,10 @@ export async function runAnalysis(
     await updateStage(client, analysis.id, stage, "Fetching repository metadata.");
     const metadataResponse = await fetch(
       `https://api.github.com/repos/${reference.owner}/${reference.name}`,
-      { headers: { Accept: "application/vnd.github+json", "User-Agent": "seeme" } },
+      {
+        headers: { Accept: "application/vnd.github+json", "User-Agent": "seeme" },
+        signal: AbortSignal.timeout(20000),
+      },
     );
     assertResponse(metadataResponse, "GitHub repository lookup");
     const metadata = (await metadataResponse.json()) as { default_branch?: string };
@@ -142,7 +146,10 @@ export async function runAnalysis(
 
     const commitResponse = await fetch(
       `https://api.github.com/repos/${reference.owner}/${reference.name}/commits/${encodeURIComponent(branch)}`,
-      { headers: { Accept: "application/vnd.github+json", "User-Agent": "seeme" } },
+      {
+        headers: { Accept: "application/vnd.github+json", "User-Agent": "seeme" },
+        signal: AbortSignal.timeout(20000),
+      },
     );
     assertResponse(commitResponse, "GitHub commit lookup");
     const commit = (await commitResponse.json()) as { sha?: string };
@@ -150,14 +157,18 @@ export async function runAnalysis(
 
     const archiveResponse = await fetch(
       `https://github.com/${reference.owner}/${reference.name}/archive/${commit.sha}.tar.gz`,
-      { headers: { "User-Agent": "seeme" } },
+      { headers: { "User-Agent": "seeme" }, signal: AbortSignal.timeout(20000) },
     );
     assertResponse(archiveResponse, "Repository archive download");
-    await updateStage(client, analysis.id, "selecting", "Selecting source files.");
+    const contentLength = archiveResponse.headers.get("content-length");
+    const maxCompressedArchiveBytes = 32 * 1024 * 1024;
+    if (contentLength && Number.parseInt(contentLength, 10) > maxCompressedArchiveBytes) {
+      throw new Error("Repository archive exceeds the supported size limit.");
+    }
+    stage = "selecting";
+    await updateStage(client, analysis.id, stage, "Selecting source files.");
     await selectArchive(Buffer.from(await archiveResponse.arrayBuffer()), temporaryDirectory);
 
-    stage = "parsing";
-    await updateStage(client, analysis.id, stage, "Parsing imports and resolving edges.");
     const result = parseRepository(temporaryDirectory);
 
     stage = "storing";

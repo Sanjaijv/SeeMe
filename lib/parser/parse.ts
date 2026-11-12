@@ -142,6 +142,20 @@ function resolveImport(
   moduleResolutionCache: ts.ModuleResolutionCache,
 ): { status: ImportCoverage["status"]; resolvedPath?: string; reason?: string } {
   const containingFile = path.join(root, importer);
+  const configuredPaths = options.paths ?? {};
+  const aliasMatch = Object.keys(configuredPaths).find((key) =>
+    key !== "*" && specifier === key || specifier.startsWith(`${key}/`));
+  if (aliasMatch && configuredPaths[aliasMatch]) {
+    const replacement = configuredPaths[aliasMatch][0];
+    const aliasTarget = specifier.replace(aliasMatch, replacement).replace(/\/+/g, "/");
+    const candidate = path.resolve(root, aliasTarget);
+    const resolvedPath = path.relative(root, candidate).split(path.sep).join("/");
+    if (selected.has(resolvedPath) || fs.existsSync(candidate)) {
+      return { status: selected.has(resolvedPath) ? "resolved" : "excluded", resolvedPath, reason: selected.has(resolvedPath) ? undefined : "The alias resolves to a local file that was excluded from the file set." };
+    }
+    return { status: "unresolved", reason: "No file matched the configured alias path." };
+  }
+
   const resolution = ts.resolveModuleName(
     specifier,
     containingFile,
@@ -195,7 +209,7 @@ function resolveImport(
     };
   }
 
-  if (!specifier.startsWith(".") && !path.isAbsolute(specifier)) {
+  if (!specifier.startsWith(".") && !path.isAbsolute(specifier) && specifier !== "*") {
     return { status: "external", reason: "No local file matched this package import." };
   }
   const unresolvedTarget = path.resolve(path.dirname(containingFile), specifier);

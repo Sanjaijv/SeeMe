@@ -23,11 +23,15 @@ export function AnalysisProgress({
     let channel: ReturnType<ReturnType<typeof createSupabaseBrowserClient>["channel"]> | null = null;
     void getToken({ template: "supabase" }).then((token) => {
       if (!active || !token) return;
-      const client = createSupabaseBrowserClient(token);
+      const client = createSupabaseBrowserClient(async () => token);
       channel = client
         .channel(`analysis:${analysisId}`, { config: { private: true } })
         .on("broadcast", { event: "stage_changed" }, () => router.refresh())
         .subscribe((status, error) => {
+          if (status === "SUBSCRIBED") {
+            router.refresh();
+            return;
+          }
           if (status === "CHANNEL_ERROR") {
             console.error(`Could not subscribe to analysis ${analysisId}.`, error);
           }

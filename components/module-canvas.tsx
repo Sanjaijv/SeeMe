@@ -240,7 +240,9 @@ export function ModuleCanvas({
                   {node.label}
                 </span>
                 <span className="mt-1 flex justify-between font-mono text-[10px] text-muted">
-                  <span>{node.files.length} files</span>
+                  <span>
+                    {activeCategory === null ? node.files.length : node.files.filter((file) => fileByPath.get(file)?.moduleKind === activeCategory).length} files
+                  </span>
                   <span>in {node.fanIn} / out {node.fanOut}</span>
                 </span>
               </button>
