@@ -46,6 +46,12 @@ export type CoverageReport = {
   examples: Record<ResolutionStatus, ImportCoverage[]>;
 };
 
+export type Route = {
+  file: string;
+  method: string;
+  path: string;
+};
+
 export type ParserResult = {
   version: 1;
   root: string;
@@ -54,9 +60,11 @@ export type ParserResult = {
   skipped: SkippedFile[];
   coverage: CoverageReport;
   adapter: string;
+  routes: Route[];
 };
 
 export type FrameworkAdapter = {
   name: string;
-  identifyFile(path: string): string | null;
+  identifyFile(path: string, sourceFile?: import("ts-morph").SourceFile): string | null;
+  routesForFile(path: string, sourceFile: import("ts-morph").SourceFile): Route[];
 };

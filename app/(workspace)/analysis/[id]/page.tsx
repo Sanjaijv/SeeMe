@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { ModuleCanvas } from "@/components/module-canvas";
 import { AnalysisProgress } from "@/components/analysis-progress";
-import type { Edge, ParsedFile } from "@/lib/parser/types";
+import type { Edge, ParsedFile, Route } from "@/lib/parser/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type Props = { params: Promise<{ id: string }> };
@@ -57,9 +57,10 @@ export default async function AnalysisPage({ params }: Props) {
     return all;
   };
 
-  const [files, storedEdges] = await Promise.all([
+  const [files, storedEdges, storedRoutes] = await Promise.all([
     fetchAll<{ id: string; path: string; language: string | null; lines: number; hash: string | null; module_kind: string | null; adapter_role: string | null; fan_in: number | null; fan_out: number | null }>(client.from("files"), "id, path, language, lines, hash, module_kind, adapter_role, fan_in, fan_out"),
     fetchAll<{ from_file_id: string; to_file_id: string; kind: "import" | "re-export" | "dynamic-import"; specifier: string | null }>(client.from("edges"), "from_file_id, to_file_id, kind, specifier"),
+    fetchAll<{ file_id: string; method: string; path: string }>(client.from("routes"), "file_id, method, path"),
   ]);
   const fileById = new Map(files.map((file) => [file.id, file.path]));
   const parsedFiles: ParsedFile[] = files.map((file) => ({
@@ -78,6 +79,10 @@ export default async function AnalysisPage({ params }: Props) {
     const to = fileById.get(edge.to_file_id);
     return from && to ? [{ from, to, kind: edge.kind, specifier: edge.specifier ?? "" }] : [];
   });
+  const routes: Route[] = storedRoutes.flatMap((route) => {
+    const file = fileById.get(route.file_id);
+    return file ? [{ file, method: route.method, path: route.path }] : [];
+  });
 
   return (
     <ModuleCanvas
@@ -88,6 +93,7 @@ export default async function AnalysisPage({ params }: Props) {
       root={analysis.root ?? ""}
       skippedCount={Array.isArray(analysis.skipped) ? analysis.skipped.length : 0}
       totalImports={analysis.coverage?.totalImports ?? 0}
+      routes={routes}
     />
   );
 }

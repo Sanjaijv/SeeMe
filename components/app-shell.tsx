@@ -1,20 +1,20 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 import Link from "next/link";
 
 import { OrganizationControls } from "@/components/organization-controls";
 import { ThemeControl } from "@/components/theme-control";
 import type { ParsedFile } from "@/lib/parser/types";
+import { genericTaxonomyForModuleKind, taxonomyForAdapter } from "@/lib/parser/taxonomy";
 
-const categoryColors: Record<ParsedFile["moduleKind"], string> = {
-  source: "bg-accent",
-  declaration: "bg-emerald-500",
-  config: "bg-amber-500",
-};
-
-type Category = ParsedFile["moduleKind"];
+type Category = string;
 const CategoryContext = createContext<Category | null>(null);
+const WorkspaceContext = createContext<{
+  adapter: string;
+  files: ParsedFile[];
+  setWorkspace: (adapter: string, files: ParsedFile[]) => void;
+} | null>(null);
 
 export function useActiveCategory(): Category | null {
   return useContext(CategoryContext);
@@ -28,11 +28,19 @@ export function AppShell({
   files?: ParsedFile[];
 }) {
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
-  const categories = (["source", "declaration", "config"] as const).map(
-    (kind) => ({
-      kind,
-      count: files.filter((file) => file.moduleKind === kind).length,
-    }),
+  const [workspace, setWorkspaceState] = useState({ adapter: "fallback", files });
+  const taxonomy = workspace.adapter === "fallback"
+    ? genericTaxonomyForModuleKind()
+    : taxonomyForAdapter(workspace.adapter);
+  const categories = taxonomy.categories.map((kind) => ({
+    kind,
+    count: workspace.files.filter((file) =>
+      workspace.adapter === "fallback" ? file.moduleKind === kind : file.adapterRole === kind,
+    ).length,
+  }));
+  const setWorkspace = useCallback(
+    (adapter: string, nextFiles: ParsedFile[]) => setWorkspaceState({ adapter, files: nextFiles }),
+    [],
   );
 
   return (
@@ -47,6 +55,7 @@ export function AppShell({
         </div>
         <ThemeControl />
       </header>
+      <WorkspaceContext.Provider value={{ adapter: workspace.adapter, files: workspace.files, setWorkspace }}>
       <div className="grid min-h-[calc(100vh-3.5rem)] grid-cols-[13rem_minmax(0,1fr)_18rem]">
         <aside className="border-r border-border bg-panel p-4">
           <div className="flex items-center justify-between">
@@ -54,7 +63,7 @@ export function AppShell({
               Files
             </h2>
             <span className="font-mono text-[11px] text-muted">
-              {files.length}
+              {workspace.files.length}
             </span>
           </div>
           <div className="mt-4 space-y-1">
@@ -74,7 +83,7 @@ export function AppShell({
               >
                 <span className="flex items-center gap-2">
                   <span
-                    className={`h-1.5 w-1.5 rounded-full ${categoryColors[category.kind]}`}
+                    className={`h-1.5 w-1.5 rounded-full ${taxonomy.colors[category.kind] ?? "bg-accent"}`}
                   />
                   {category.kind}
                 </span>
@@ -87,6 +96,17 @@ export function AppShell({
           {children}
         </CategoryContext.Provider>
       </div>
+      </WorkspaceContext.Provider>
     </div>
   );
+}
+
+export function useWorkspace(): {
+  adapter: string;
+  files: ParsedFile[];
+  setWorkspace: (adapter: string, files: ParsedFile[]) => void;
+} {
+  const context = useContext(WorkspaceContext);
+  if (!context) throw new Error("useWorkspace must be used inside AppShell");
+  return context;
 }

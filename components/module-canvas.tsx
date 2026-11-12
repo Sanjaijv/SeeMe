@@ -1,14 +1,14 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import type { Edge, ParsedFile } from "@/lib/parser/types";
+import type { Edge, ParsedFile, Route } from "@/lib/parser/types";
 import {
   connectModules,
   foldModules,
 } from "@/lib/parser/folding";
 import { RepositoryDetail } from "@/components/repository-detail";
-import { useActiveCategory } from "@/components/app-shell";
+import { useActiveCategory, useWorkspace } from "@/components/app-shell";
 
 const categoryColors: Record<ParsedFile["moduleKind"], string> = {
   source: "bg-accent",
@@ -28,6 +28,7 @@ export function ModuleCanvas({
   root,
   skippedCount,
   totalImports,
+  routes,
 }: {
   adapter: string;
   coverage: { totalImports: number; counts: Record<string, number> } | null;
@@ -36,6 +37,7 @@ export function ModuleCanvas({
   root: string;
   skippedCount: number;
   totalImports: number;
+  routes: Route[];
 }) {
   const [openNode, setOpenNode] = useState<string | null>(null);
   const [selection, setSelection] = useState<
@@ -44,6 +46,12 @@ export function ModuleCanvas({
   const [highlightedFile, setHighlightedFile] = useState<string | null>(null);
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
   const activeCategory = useActiveCategory();
+  const { adapter: workspaceAdapter, setWorkspace } = useWorkspace();
+  useEffect(() => setWorkspace(adapter, files), [adapter, files, setWorkspace]);
+  const matchesCategory = (file: ParsedFile | undefined): boolean =>
+    workspaceAdapter === "fallback"
+      ? file?.moduleKind === activeCategory
+      : file?.adapterRole === activeCategory;
   const canvasRef = useRef<HTMLDivElement>(null);
   const nodes = useMemo(() => foldModules(files), [files]);
   const moduleEdges = useMemo(() => connectModules(nodes, edges), [nodes, edges]);
@@ -154,8 +162,8 @@ export function ModuleCanvas({
           const to = endpoint(edge.to, edge.toFile);
           const dimmed =
             activeCategory !== null &&
-            fileByPath.get(edge.fromFile)?.moduleKind !== activeCategory &&
-            fileByPath.get(edge.toFile)?.moduleKind !== activeCategory
+            !matchesCategory(fileByPath.get(edge.fromFile)) &&
+            !matchesCategory(fileByPath.get(edge.toFile))
             ? true
             : selection?.type === "file"
               ? edge.fromFile !== selection.id && edge.toFile !== selection.id
@@ -189,7 +197,7 @@ export function ModuleCanvas({
           const categoryDimmed =
             activeCategory !== null &&
             !node.files.some(
-              (file) => files.find((item) => item.path === file)?.moduleKind === activeCategory,
+              (file) => matchesCategory(fileByPath.get(file)),
             );
           return (
             <section
@@ -241,7 +249,7 @@ export function ModuleCanvas({
                 </span>
                 <span className="mt-1 flex justify-between font-mono text-[10px] text-muted">
                   <span>
-                    {activeCategory === null ? node.files.length : node.files.filter((file) => fileByPath.get(file)?.moduleKind === activeCategory).length} files
+                    {activeCategory === null ? node.files.length : node.files.filter((file) => matchesCategory(fileByPath.get(file))).length} files
                   </span>
                   <span>in {node.fanIn} / out {node.fanOut}</span>
                 </span>
@@ -255,7 +263,7 @@ export function ModuleCanvas({
                         className={`flex w-full items-center gap-2 px-3 py-1.5 text-left font-mono text-[10px] hover:bg-panel-strong ${
                           (activeFiles && !activeFiles.has(file)) ||
                           (activeCategory !== null &&
-                            parsedFile?.moduleKind !== activeCategory)
+                            !matchesCategory(parsedFile))
                             ? "opacity-25"
                             : highlightedFile === file
                               ? "bg-accent/20 text-accent"
@@ -309,6 +317,7 @@ export function ModuleCanvas({
       }
       selection={selection}
       skippedCount={skippedCount}
+      routes={routes}
     />
     </>
   );

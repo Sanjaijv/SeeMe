@@ -122,6 +122,22 @@ async function storeResult(
     const { error: edgesError } = await client.from("edges").insert(edges);
     if (edgesError) throw new Error(`Could not store parsed edges: ${edgesError.message}`);
   }
+  const routes = result.routes.flatMap((route) => {
+    const fileId = fileIds.get(route.file);
+    return fileId
+      ? [{
+          organization_id: analysis.organization_id,
+          analysis_id: analysis.id,
+          file_id: fileId,
+          method: route.method,
+          path: route.path,
+        }]
+      : [];
+  });
+  if (routes.length > 0) {
+    const { error: routesError } = await client.from("routes").insert(routes);
+    if (routesError) throw new Error(`Could not store parsed routes: ${routesError.message}`);
+  }
 }
 
 export async function runAnalysis(
