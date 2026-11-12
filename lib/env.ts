@@ -13,4 +13,5 @@ function requiredEnv(name: string): string {
 export const env = {
   supabaseUrl: requiredEnv("NEXT_PUBLIC_SUPABASE_URL"),
   supabasePublishableKey: requiredEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"),
+  supabaseSecretKey: requiredEnv("SUPABASE_SECRET_KEY"),
 };

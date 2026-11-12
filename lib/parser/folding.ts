@@ -23,7 +23,9 @@ type WorkingNode = {
 
 function parentPath(folder: string): string | null {
   if (folder === ".") return null;
-  const parent = folder.slice(0, folder.lastIndexOf("/"));
+  const separator = folder.lastIndexOf("/");
+  if (separator === -1) return ".";
+  const parent = folder.slice(0, separator);
   return parent || ".";
 }
 
@@ -70,7 +72,7 @@ function foldAtThreshold(
 
   while (byPath.size > maxNodes) {
     const candidates = [...byPath.values()]
-      .filter((node) => node.path !== "." && byPath.has(parentPath(node.path) ?? ""))
+      .filter((node) => node.path !== ".")
       .sort(
         (a, b) =>
           a.files.length - b.files.length ||
@@ -81,10 +83,10 @@ function foldAtThreshold(
     if (!node) break;
     const parent = parentPath(node.path);
     if (!parent) break;
-    const parentNode = byPath.get(parent);
-    if (!parentNode) break;
+    const parentNode = byPath.get(parent) ?? { path: parent, files: [] };
     parentNode.files.push(...node.files);
     parentNode.files.sort();
+    byPath.set(parent, parentNode);
     byPath.delete(node.path);
   }
 
@@ -97,6 +99,31 @@ export function foldModules(files: ParsedFile[]): ModuleNode[] {
   const threshold = 2;
   const folded = foldAtThreshold(files, threshold, 24);
   const fileByPath = new Map(files.map((file) => [file.path, file]));
+  const visiblePaths = folded.map((node) => node.path);
+  const labels = new Map<string, string>();
+  const pathParts = new Map(
+    visiblePaths.map((path) => [path, path === "." ? ["root"] : path.split("/")]),
+  );
+  for (const path of visiblePaths) {
+    if (path === ".") {
+      labels.set(path, "root");
+      continue;
+    }
+    const parts = pathParts.get(path) ?? [path];
+    let length = 1;
+    while (
+      visiblePaths.some((otherPath) => {
+        if (otherPath === path || otherPath === ".") return false;
+        const otherParts = pathParts.get(otherPath) ?? [otherPath];
+        return (
+          otherParts.slice(-length).join("/") === parts.slice(-length).join("/")
+        );
+      })
+    ) {
+      length += 1;
+    }
+    labels.set(path, parts.slice(-length).join("/"));
+  }
 
   return folded.map((node) => {
     const fanIn = node.files.reduce(
@@ -110,7 +137,7 @@ export function foldModules(files: ParsedFile[]): ModuleNode[] {
     return {
       id: node.path,
       path: node.path,
-      label: node.path === "." ? "root" : node.path.split("/").at(-1) ?? node.path,
+      label: labels.get(node.path) ?? node.path,
       files: node.files,
       fanIn,
       fanOut,

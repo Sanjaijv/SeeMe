@@ -32,6 +32,7 @@ const SOURCE_EXTENSIONS = new Set([
   ".ts",
   ".tsx",
 ]);
+const JAVASCRIPT_EXTENSIONS = new Set([".cjs", ".js", ".jsx", ".mjs"]);
 const IGNORED_DIRECTORIES = new Set([
   ".git",
   ".next",
@@ -137,35 +138,67 @@ function resolveImport(
   importer: string,
   specifier: string,
   selected: Set<string>,
+  options: ts.CompilerOptions,
+  moduleResolutionCache: ts.ModuleResolutionCache,
 ): { status: ImportCoverage["status"]; resolvedPath?: string; reason?: string } {
   const containingFile = path.join(root, importer);
+  const configuredPaths = options.paths ?? {};
+  const aliasMatch = Object.keys(configuredPaths).find((key) =>
+    key !== "*" && specifier === key || specifier.startsWith(`${key}/`));
+  if (aliasMatch && configuredPaths[aliasMatch]) {
+    const replacement = configuredPaths[aliasMatch][0];
+    const aliasTarget = specifier.replace(aliasMatch, replacement).replace(/\/+/g, "/");
+    const candidate = path.resolve(root, aliasTarget);
+    const resolvedPath = path.relative(root, candidate).split(path.sep).join("/");
+    if (selected.has(resolvedPath) || fs.existsSync(candidate)) {
+      return { status: selected.has(resolvedPath) ? "resolved" : "excluded", resolvedPath, reason: selected.has(resolvedPath) ? undefined : "The alias resolves to a local file that was excluded from the file set." };
+    }
+    return { status: "unresolved", reason: "No file matched the configured alias path." };
+  }
+
   const resolution = ts.resolveModuleName(
     specifier,
     containingFile,
-    resolverOptions(root),
+    options,
     ts.sys,
+    moduleResolutionCache,
   ).resolvedModule;
 
   if (resolution) {
-    const resolvedPath = path.relative(root, resolution.resolvedFileName).split(path.sep).join("/");
+    let resolvedFileName = resolution.resolvedFileName;
+    const resolvedPath = path.relative(root, resolvedFileName).split(path.sep).join("/");
+    const javascriptExtension = path.extname(specifier).toLowerCase();
+    if (
+      JAVASCRIPT_EXTENSIONS.has(javascriptExtension) &&
+      resolvedPath.endsWith(".d.ts")
+    ) {
+      const javascriptPath = resolvedPath.replace(
+        /\.d\.ts$/i,
+        javascriptExtension,
+      );
+      if (selected.has(javascriptPath)) {
+        resolvedFileName = path.join(root, javascriptPath);
+      }
+    }
+    const selectedResolvedPath = path.relative(root, resolvedFileName).split(path.sep).join("/");
     const isInsideRoot =
-      path.isAbsolute(resolution.resolvedFileName) &&
-      !resolvedPath.startsWith("..") &&
-      !resolvedPath.startsWith("../");
-    if (isInsideRoot && resolvedPath.split("/").includes("node_modules")) {
+      path.isAbsolute(resolvedFileName) &&
+      !selectedResolvedPath.startsWith("..") &&
+      !selectedResolvedPath.startsWith("../");
+    if (isInsideRoot && selectedResolvedPath.split("/").includes("node_modules")) {
       return {
         status: "external",
-        resolvedPath,
+        resolvedPath: selectedResolvedPath,
         reason: "The import resolves to an ignored dependency directory.",
       };
     }
     if (isInsideRoot) {
-      if (selected.has(resolvedPath)) {
-        return { status: "resolved", resolvedPath };
+      if (selected.has(selectedResolvedPath)) {
+        return { status: "resolved", resolvedPath: selectedResolvedPath };
       }
       return {
         status: "excluded",
-        resolvedPath,
+        resolvedPath: selectedResolvedPath,
         reason: "The target exists inside the repository but was excluded from the file set.",
       };
     }
@@ -176,7 +209,7 @@ function resolveImport(
     };
   }
 
-  if (!specifier.startsWith(".") && !path.isAbsolute(specifier)) {
+  if (!specifier.startsWith(".") && !path.isAbsolute(specifier) && specifier !== "*") {
     return { status: "external", reason: "No local file matched this package import." };
   }
   const unresolvedTarget = path.resolve(path.dirname(containingFile), specifier);
@@ -216,10 +249,16 @@ export function parseRepository(
   const files: ParsedFile[] = [];
   const skipped: SkippedFile[] = [];
   const sourceByRelativePath = new Map<string, SourceFile>();
+  const options = resolverOptions(root);
   const project = new Project({
     skipAddingFilesFromTsConfig: true,
-    compilerOptions: resolverOptions(root),
+    compilerOptions: options,
   });
+  const moduleResolutionCache = ts.createModuleResolutionCache(
+    root,
+    (fileName) => ts.sys.useCaseSensitiveFileNames ? fileName : fileName.toLowerCase(),
+    options,
+  );
 
   for (const file of discovered) {
     try {
@@ -256,7 +295,14 @@ export function parseRepository(
   for (const [importer, sourceFile] of sourceByRelativePath) {
     for (const item of collectImports(sourceFile)) {
       coverage.totalImports += 1;
-      const resolution = resolveImport(root, importer, item.specifier, selected);
+      const resolution = resolveImport(
+        root,
+        importer,
+        item.specifier,
+        selected,
+        options,
+        moduleResolutionCache,
+      );
       coverage.counts[resolution.status] += 1;
       const record: ImportCoverage = {
         importer,
@@ -271,7 +317,7 @@ export function parseRepository(
         coverage.examples[resolution.status].push(record);
       }
       if (resolution.status === "resolved" && resolution.resolvedPath) {
-        const key = `${importer}\0${resolution.resolvedPath}`;
+        const key = `${importer}\0${resolution.resolvedPath}\0${item.kind}`;
         if (!edgeKeys.has(key)) {
           edgeKeys.add(key);
           edges.push({

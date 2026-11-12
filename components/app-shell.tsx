@@ -5,7 +5,6 @@ import Link from "next/link";
 
 import { OrganizationControls } from "@/components/organization-controls";
 import { ThemeControl } from "@/components/theme-control";
-import analysis from "@/data/analysis.json";
 import type { ParsedFile } from "@/lib/parser/types";
 
 const categoryColors: Record<ParsedFile["moduleKind"], string> = {
@@ -23,11 +22,12 @@ export function useActiveCategory(): Category | null {
 
 export function AppShell({
   children,
+  files = [],
 }: {
   children: ReactNode;
+  files?: ParsedFile[];
 }) {
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
-  const files = analysis.files as ParsedFile[];
   const categories = (["source", "declaration", "config"] as const).map(
     (kind) => ({
       kind,

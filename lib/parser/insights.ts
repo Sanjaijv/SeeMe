@@ -14,13 +14,18 @@ export type Insight = {
 
 const LONG_FILE_LINE_THRESHOLD = 500;
 
+export function matchesRouteFile(pathname: string): boolean {
+  return /(?:^|\/)(?:app|pages)\/.+\/(?:page|route|layout)\.(?:[cm]?[jt]sx?)$/.test(pathname)
+    || /(?:^|\/)(?:app|pages)\/(?:page|route|layout)\.(?:[cm]?[jt]sx?)$/.test(pathname)
+    || /(?:^|\/)(?:app|pages)\/.+\/.*\/(?:page|route|layout)\.(?:[cm]?[jt]sx?)$/.test(pathname);
+}
+
 function isFrameworkEntry(file: ParsedFile): boolean {
   if (file.moduleKind === "config" || file.adapterRole !== null) return true;
-  return /(^|\/)(app|pages)\/.*(?:page|route|layout)\.(?:[cm]?[jt]sx?)$/.test(
-    file.path,
-  ) || /(^|\/)(middleware|next\.config|vite\.config|webpack\.config)/.test(
-    file.path,
-  );
+  const basename = file.path.split("/").at(-1) ?? file.path;
+  const appPage = /(?:^|\/)(?:app|pages)\/(?:page|route|layout)\.(?:[cm]?[jt]sx?)$/.test(file.path);
+  const hasFrameworkEntryName = /^(page|route|layout|middleware|next\.config|vite\.config|webpack\.config)(?:\.[cm]?[jt]sx?)?$/.test(basename);
+  return appPage || hasFrameworkEntryName;
 }
 
 function cycleFiles(files: ParsedFile[], edges: Edge[]): string[] {

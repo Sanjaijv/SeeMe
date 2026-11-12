@@ -180,49 +180,40 @@ alter table public.file_roles enable row level security;
 alter table public.insights enable row level security;
 
 create policy "Organization members can access organizations"
-  on public.organizations for all to authenticated
-  using ((select auth.jwt() ->> 'org_id') = id)
-  with check ((select auth.jwt() ->> 'org_id') = id);
+  on public.organizations for select to authenticated
+  using ((select auth.jwt() ->> 'org_id') = id);
 
 create policy "Organization members can access projects"
-  on public.projects for all to authenticated
-  using ((select auth.jwt() ->> 'org_id') = organization_id)
-  with check ((select auth.jwt() ->> 'org_id') = organization_id);
+  on public.projects for select to authenticated
+  using ((select auth.jwt() ->> 'org_id') = organization_id);
 
 create policy "Organization members can access analyses"
-  on public.analyses for all to authenticated
-  using ((select auth.jwt() ->> 'org_id') = organization_id)
-  with check ((select auth.jwt() ->> 'org_id') = organization_id);
+  on public.analyses for select to authenticated
+  using ((select auth.jwt() ->> 'org_id') = organization_id);
 
 create policy "Organization members can access files"
-  on public.files for all to authenticated
-  using ((select auth.jwt() ->> 'org_id') = organization_id)
-  with check ((select auth.jwt() ->> 'org_id') = organization_id);
+  on public.files for select to authenticated
+  using ((select auth.jwt() ->> 'org_id') = organization_id);
 
 create policy "Organization members can access edges"
-  on public.edges for all to authenticated
-  using ((select auth.jwt() ->> 'org_id') = organization_id)
-  with check ((select auth.jwt() ->> 'org_id') = organization_id);
+  on public.edges for select to authenticated
+  using ((select auth.jwt() ->> 'org_id') = organization_id);
 
 create policy "Organization members can access routes"
-  on public.routes for all to authenticated
-  using ((select auth.jwt() ->> 'org_id') = organization_id)
-  with check ((select auth.jwt() ->> 'org_id') = organization_id);
+  on public.routes for select to authenticated
+  using ((select auth.jwt() ->> 'org_id') = organization_id);
 
 create policy "Organization members can access explanations"
-  on public.explanations for all to authenticated
-  using ((select auth.jwt() ->> 'org_id') = organization_id)
-  with check ((select auth.jwt() ->> 'org_id') = organization_id);
+  on public.explanations for select to authenticated
+  using ((select auth.jwt() ->> 'org_id') = organization_id);
 
 create policy "Organization members can access file roles"
-  on public.file_roles for all to authenticated
-  using ((select auth.jwt() ->> 'org_id') = organization_id)
-  with check ((select auth.jwt() ->> 'org_id') = organization_id);
+  on public.file_roles for select to authenticated
+  using ((select auth.jwt() ->> 'org_id') = organization_id);
 
 create policy "Organization members can access insights"
-  on public.insights for all to authenticated
-  using ((select auth.jwt() ->> 'org_id') = organization_id)
-  with check ((select auth.jwt() ->> 'org_id') = organization_id);
+  on public.insights for select to authenticated
+  using ((select auth.jwt() ->> 'org_id') = organization_id);
 
 insert into public.organizations (id)
 values
