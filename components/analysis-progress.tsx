@@ -21,9 +21,11 @@ export function AnalysisProgress({
   useEffect(() => {
     let active = true;
     let channel: ReturnType<ReturnType<typeof createSupabaseBrowserClient>["channel"]> | null = null;
-    void getToken({ template: "supabase" }).then((token) => {
+    void getToken({ template: "supabase" }).then(async (token) => {
       if (!active || !token) return;
-      const client = createSupabaseBrowserClient(async () => token);
+      const client = createSupabaseBrowserClient(() => getToken({ template: "supabase" }));
+      await client.realtime.setAuth(token);
+      if (!active) return;
       channel = client
         .channel(`analysis:${analysisId}`, { config: { private: true } })
         .on("broadcast", { event: "stage_changed" }, () => router.refresh())
@@ -36,6 +38,8 @@ export function AnalysisProgress({
             console.error(`Could not subscribe to analysis ${analysisId}.`, error);
           }
         });
+    }).catch((error: unknown) => {
+      console.error(`Could not authenticate analysis ${analysisId}.`, error);
     });
     return () => {
       active = false;

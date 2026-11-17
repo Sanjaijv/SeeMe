@@ -1,4 +1,4 @@
-export type ImportKind = "import" | "re-export" | "dynamic-import";
+export type ImportKind = "import" | "re-export" | "dynamic-import" | "require";
 
 export type ResolutionStatus =
   | "resolved"
@@ -19,6 +19,7 @@ export type ParsedFile = {
   hash: string;
   moduleKind: "source" | "declaration" | "config";
   adapterRole: string | null;
+  exportNames: string[];
   fanIn: number;
   fanOut: number;
 };

@@ -104,7 +104,45 @@ function collectImports(
       if (!literal) return [];
       return [{ kind: "dynamic-import" as const, specifier: literal.getLiteralValue() }];
     });
-  return [...imports, ...exports, ...dynamicImports];
+  const requires = sourceFile
+    .getDescendantsOfKind(SyntaxKind.CallExpression)
+    .flatMap((call) => {
+      if (call.getExpression().getText() !== "require") return [];
+      const argument = call.getArguments()[0];
+      const literal = argument?.asKind(SyntaxKind.StringLiteral)
+        ?? argument?.asKind(SyntaxKind.NoSubstitutionTemplateLiteral);
+      if (!literal) return [];
+      return [{ kind: "require" as const, specifier: literal.getLiteralValue() }];
+    });
+  return [...imports, ...exports, ...dynamicImports, ...requires];
+}
+
+function commonJsExportName(left: string): string | null {
+  const memberMatch = /^(?:module\.exports|exports)\.([A-Za-z_$][\w$]*)$/.exec(left);
+  if (memberMatch) return memberMatch[1];
+  if (left === "module.exports") return "default";
+  return null;
+}
+
+function collectCommonJsExports(sourceFile: SourceFile): string[] {
+  const names = new Set<string>();
+  for (const assignment of sourceFile.getDescendantsOfKind(SyntaxKind.BinaryExpression)) {
+    if (assignment.getOperatorToken().getKind() !== SyntaxKind.EqualsToken) continue;
+    const name = commonJsExportName(assignment.getLeft().getText());
+    if (!name) continue;
+    const right = assignment.getRight().asKind(SyntaxKind.ObjectLiteralExpression);
+    if (name === "default" && right) {
+      for (const property of right.getProperties()) {
+        const propertyName = "getName" in property && typeof property.getName === "function"
+          ? property.getName()
+          : null;
+        if (propertyName) names.add(propertyName);
+      }
+      continue;
+    }
+    names.add(name);
+  }
+  return [...names].sort();
 }
 
 function resolverOptions(root: string): ts.CompilerOptions {
@@ -275,6 +313,7 @@ export function parseRepository(
         hash: crypto.createHash("sha256").update(contents).digest("hex"),
         moduleKind: moduleKind(relativePath),
         adapterRole: selectedAdapter.identifyFile(relativePath, sourceFile),
+        exportNames: collectCommonJsExports(sourceFile),
         fanIn: 0,
         fanOut: 0,
       });
@@ -318,7 +357,9 @@ export function parseRepository(
         coverage.examples[resolution.status].push(record);
       }
       if (resolution.status === "resolved" && resolution.resolvedPath) {
-        const key = `${importer}\0${resolution.resolvedPath}\0${item.kind}`;
+        const key = item.kind === "require"
+          ? `${importer}\0${resolution.resolvedPath}\0import`
+          : `${importer}\0${resolution.resolvedPath}\0${item.kind}`;
         if (!edgeKeys.has(key)) {
           edgeKeys.add(key);
           edges.push({

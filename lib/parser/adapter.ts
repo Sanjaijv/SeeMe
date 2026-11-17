@@ -141,6 +141,28 @@ function createReactAdapter(): FrameworkAdapter {
   }, () => []);
 }
 
+function expressRole(filePath: string): string | null {
+  const directories = filePath.split("/").slice(0, -1).map((part) => part.toLowerCase());
+  const roles: Array<[string, string]> = [
+    ["route", "Routes"],
+    ["routes", "Routes"],
+    ["controller", "Controllers"],
+    ["controllers", "Controllers"],
+    ["middleware", "Middleware"],
+    ["middlewares", "Middleware"],
+    ["service", "Services"],
+    ["services", "Services"],
+  ];
+  for (const [directory, role] of roles) {
+    if (directories.includes(directory)) return role;
+  }
+  return null;
+}
+
+function createExpressAdapter(): FrameworkAdapter {
+  return baseAdapter("express", expressRole, () => []);
+}
+
 export function createFallbackAdapter(): FrameworkAdapter {
   return baseAdapter("fallback", () => null, () => []);
 }
@@ -152,6 +174,15 @@ export function detectFrameworkAdapter(root: string, files: string[]): Framework
   }
   if (packages.has("@nestjs/core") || files.some((file) => /\.controller\.[cm]?[jt]s$/.test(file))) {
     return createNestAdapter();
+  }
+  if (
+    packages.has("express")
+    || files.some((file) => file.split("/").slice(0, -1).some((part) =>
+      ["route", "routes", "controller", "controllers", "middleware", "middlewares", "service", "services"]
+        .includes(part.toLowerCase()),
+    ))
+  ) {
+    return createExpressAdapter();
   }
   if (packages.has("react")) return createReactAdapter();
   return createFallbackAdapter();

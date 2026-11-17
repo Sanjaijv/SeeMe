@@ -20,9 +20,11 @@ export function AnalysisChannelListener({
     const channels: Array<ReturnType<ReturnType<typeof createSupabaseBrowserClient>["channel"]>> = [];
     const ids = analysisKey ? analysisKey.split(",") : [];
 
-    void getToken({ template: "supabase" }).then((token) => {
+    void getToken({ template: "supabase" }).then(async (token) => {
       if (!active || !token) return;
-      const client = createSupabaseBrowserClient(async () => token);
+      const client = createSupabaseBrowserClient(() => getToken({ template: "supabase" }));
+      await client.realtime.setAuth(token);
+      if (!active) return;
       for (const analysisId of ids) {
         const channel = client
           .channel(`analysis:${analysisId}`, { config: { private: true } })
@@ -38,6 +40,8 @@ export function AnalysisChannelListener({
           });
         channels.push(channel);
       }
+    }).catch((error: unknown) => {
+      console.error("Could not authenticate the analysis channel listener.", error);
     });
 
     return () => {
