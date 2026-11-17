@@ -64,6 +64,7 @@ export async function POST(request: Request) {
     .select("id")
     .eq("organization_id", session.orgId)
     .eq("project_id", projectId)
+    .neq("status", "failed")
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();

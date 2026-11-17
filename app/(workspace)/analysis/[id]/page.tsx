@@ -71,6 +71,7 @@ export default async function AnalysisPage({ params }: Props) {
     hash: file.hash ?? "",
     moduleKind: (file.module_kind === "declaration" || file.module_kind === "config" ? file.module_kind : "source") as ParsedFile["moduleKind"],
     adapterRole: file.adapter_role,
+    exportNames: [],
     fanIn: file.fan_in ?? 0,
     fanOut: file.fan_out ?? 0,
   }));

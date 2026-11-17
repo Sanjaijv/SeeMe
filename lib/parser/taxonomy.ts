@@ -37,6 +37,15 @@ const taxonomies: Record<string, Taxonomy> = {
       Hooks: "bg-emerald-500",
     },
   },
+  express: {
+    categories: ["Routes", "Controllers", "Middleware", "Services"],
+    colors: {
+      Routes: "bg-accent",
+      Controllers: "bg-emerald-500",
+      Middleware: "bg-amber-500",
+      Services: "bg-purple-500",
+    },
+  },
 };
 
 export function taxonomyForAdapter(adapter: string): Taxonomy {
